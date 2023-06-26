@@ -1,0 +1,5 @@
+module ex (
+    input
+);
+    
+endmodule

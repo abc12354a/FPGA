@@ -2,10 +2,7 @@ module id_ex (
     input                        rst_n,//sync rst, low valid
     input                        clk,
     
-    input[`REG_ADDR_WIDTH-1:0]  reg_rd_addr1_in,
-    input[`REG_ADDR_WIDTH-1:0]  reg_rd_addr2_in,
-    input                       reg_rd_en1_in,
-    input                       reg_rd_en2_in,
+
     input[`REG_ADDR_WIDTH-1:0]  reg_wr_addr_in,
     input                       reg_wr_en_in,
     input[`REG_DATA_WIDTH-1:0]  reg_rd_data1_in,
@@ -13,10 +10,6 @@ module id_ex (
     input[`ALUSEL_WIDTH-1:0]    alusel_in,
     input[`ALUOP_WIDTH-1:0]     aluop_in,
 
-    output[`REG_ADDR_WIDTH-1:0]  reg_rd_addr1_out,
-    output[`REG_ADDR_WIDTH-1:0]  reg_rd_addr2_out,
-    output                       reg_rd_en1_out,
-    output                       reg_rd_en2_out,
     output[`REG_ADDR_WIDTH-1:0]  reg_wr_addr_out,
     output                       reg_wr_en_out,
     output[`REG_DATA_WIDTH-1:0]  reg_rd_data1_out,

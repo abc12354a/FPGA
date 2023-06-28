@@ -1,6 +1,7 @@
 //********************** COMMON **********************
 `define REG_NUM         32
-
+`define INST_NUM        1024
+`define INST_NUM_LOG2   10
 //********************** WIDTH **********************
 `define INST_ADDR_WIDTH 32
 `define INST_DATA_WIDTH 32

@@ -5,7 +5,6 @@ module ex (
     input[`REG_DATA_WIDTH-1:0]  reg1_in,
     input[`REG_DATA_WIDTH-1:0]  reg2_in,
     input[`REG_ADDR_WIDTH-1:0]  w_reg_addr_in,
-    input[`REG_DATA_WIDTH-1:0]  w_reg_data_in,
     input                       w_reg_en_in,
 
     output[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,

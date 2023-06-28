@@ -16,7 +16,7 @@ module regs (
 
 //********************** write operation **********************
     always @(posedge clk) begin
-        if(rst_n) begin
+        if(rst_n) begin //non reset
             if(we && waddr!=0)begin// reg0 stands for null
                 regs[waddr] <= wdata;
             end 

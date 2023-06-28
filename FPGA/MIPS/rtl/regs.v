@@ -26,32 +26,32 @@ module regs (
 //********************** read operation **********************
     always @(*) begin //read operation doesn't require clk
         if(!rst_n) begin
-            rdata1 <= 0;
+            rdata1 = 0;
         end else if(raddr1 == 'b0) begin
-            rdata1 <= 0;
+            rdata1 = 0;
         end else begin
             if(re1 && we && raddr1 == waddr) begin //write && read same time
-                rdata1 <= wdata;
+                rdata1 = wdata;
             end else if(re1)begin
-                rdata1 <= regs[raddr1];
+                rdata1 = regs[raddr1];
             end else begin
-                rdata1 <= 0;
+                rdata1 = 0;
             end
         end
     end
 
     always @(*) begin //read operation doesn't require clk
         if(!rst_n) begin
-            rdata2 <= 0;
+            rdata2 = 0;
         end else if(raddr1 == 'b0) begin
-            rdata2 <= 0;
+            rdata2 = 0;
         end else begin
             if(re2 && we && raddr2 == waddr) begin 
-                rdata2 <= wdata;
+                rdata2 = wdata;
             end else if(re2)begin
-                rdata2 <= regs[raddr1];
+                rdata2 = regs[raddr1];
             end else begin
-                rdata2 <= 0;
+                rdata2 = 0;
             end
         end
     end

@@ -1,8 +1,8 @@
 module pc (
     input                        clk,
     input                        rst_n,//sync reset
-    output[`INST_ADDR_WIDTH-1:0] addr_to_rom,
-    output                       pc_enable
+    output reg[`INST_ADDR_WIDTH-1:0] addr_to_rom,
+    output reg                       pc_enable
 );
 
     always @(posedge clk) begin

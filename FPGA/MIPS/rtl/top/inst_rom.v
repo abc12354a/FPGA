@@ -1,7 +1,7 @@
 module inst_rom(
-	input                           ce,
-	input [`INST_ADDR_WIDTH-1:0]    addr,
-	output[`INST_DATA_WIDTH-1:0]    inst
+	input                               ce,
+	input     [`INST_ADDR_WIDTH-1:0]    addr,
+	output reg[`INST_DATA_WIDTH-1:0]    inst
 );
 
 	reg[`INST_DATA_WIDTH-1:0]  inst_mem[`INST_NUM-1:0];
@@ -17,7 +17,7 @@ module inst_rom(
         if (ce == 0) begin
             inst = 0;
         end else begin
-            inst <= inst_mem[addr[`INST_NUM_LOG2+1:2]];
+            inst = inst_mem[addr[`INST_NUM_LOG2+1:2]];
         end
 	end
 

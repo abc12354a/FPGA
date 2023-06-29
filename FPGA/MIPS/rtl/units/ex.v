@@ -7,9 +7,9 @@ module ex (
     input[`REG_ADDR_WIDTH-1:0]  w_reg_addr_in,
     input                       w_reg_en_in,
 
-    output[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
-    output[`REG_DATA_WIDTH-1:0] w_reg_data_out,
-    output                      w_reg_en_out
+    output reg[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
+    output reg[`REG_DATA_WIDTH-1:0] w_reg_data_out,
+    output reg                      w_reg_en_out
 );
     reg[`REG_DATA_WIDTH-1:0]    logic_out;
     always @(*) begin

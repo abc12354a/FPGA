@@ -9,8 +9,8 @@ module regs (
     input                        re1,
     input                        re2,
 
-    output[`REG_DATA_WIDTH-1:0]  rdata1,
-    output[`REG_DATA_WIDTH-1:0]  rdata2
+    output reg[`REG_DATA_WIDTH-1:0]  rdata1,
+    output reg[`REG_DATA_WIDTH-1:0]  rdata2
 );
     reg[`REG_DATA_WIDTH-1:0] regs[`REG_NUM-1:0]; //32 regs
 

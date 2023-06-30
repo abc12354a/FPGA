@@ -17,7 +17,7 @@ module ex (
             logic_out = 0;
         end else begin
             case (aluop_in)
-                `EXE_ORI: logic_out = reg1_in | reg2_in;
+                `EXE_OP_OR: logic_out = reg1_in | reg2_in;
                 default: logic_out = 0;
             endcase
         end

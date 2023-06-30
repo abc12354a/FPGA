@@ -23,14 +23,14 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data1_2ex;
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data2_2ex;
     wire [`ALUSEL_WIDTH-1:0]    alusel_2ex;
-    wire [`ALUSEL_WIDTH-1:0]    aluop_2ex;
+    wire [`ALUOP_WIDTH-1:0]    aluop_2ex;
 
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2ex_dly;
     wire                        reg_wr_en_2ex_dly;
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data1_2ex_dly;
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data2_2ex_dly;
     wire [`ALUSEL_WIDTH-1:0]    alusel_2ex_dly;
-    wire [`ALUSEL_WIDTH-1:0]    aluop_2ex_dly;
+    wire [`ALUOP_WIDTH-1:0]    aluop_2ex_dly;
 
 //ex to mem
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2mem;

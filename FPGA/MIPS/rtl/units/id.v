@@ -57,6 +57,7 @@ module id (
                     alusel_out = `EXE_RES_LOGIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 1£»
                     reg_rd_addr1_out = rs;
                     reg_wr_addr_out = rt;
                     imm_data = {16'h0,im};

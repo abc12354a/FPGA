@@ -5,6 +5,15 @@ module id (
     input[`REG_DATA_WIDTH-1:0]   reg_rd_data1_in,
     input[`REG_DATA_WIDTH-1:0]   reg_rd_data2_in,
     
+    //ex_phase to id_phase, data forward
+    input[`REG_ADDR_WIDTH-1:0]   ex_waddr_in,
+    input[`REG_DATA_WIDTH-1:0]   ex_wdata_in,
+    input                        ex_wen_in,
+    //mem_phase to id_phase, data forward
+    input[`REG_ADDR_WIDTH-1:0]   mem_waddr_in,
+    input[`REG_DATA_WIDTH-1:0]   mem_wdata_in,
+    input                        mem_wen_in,
+
     output reg[`REG_ADDR_WIDTH-1:0]  reg_rd_addr1_out,
     output reg[`REG_ADDR_WIDTH-1:0]  reg_rd_addr2_out,
     output reg                       reg_rd_en1_out,
@@ -22,12 +31,13 @@ module id (
     //-------------------------------------------
     reg                        inst_valid;
     reg[`REG_DATA_WIDTH-1:0]   imm_data;
-    wire[6-1:0]  op = inst_data_in[31:26];
-    wire[4:0]    rs = inst_data_in[25:21];
-    wire[4:0]    rt = inst_data_in[20:16];
-    wire[4:0]    wt = inst_data_in[15:11];
-    wire[16-1:0] im = inst_data_in[15:0];
-
+    wire[6-1:0]       op = inst_data_in[31:26];
+    wire[4:0]         rs = inst_data_in[25:21];
+    wire[4:0]         rt = inst_data_in[20:16];
+    wire[4:0]         wt = inst_data_in[15:11];
+    wire[16-1:0]      im = inst_data_in[15:0];
+    wire[5:0]    func_op = inst_data_in[5:0];
+    wire[4:0]        op4 = inst_data_in[10:6];
 
     always @(*) begin
         if(!rst_n) begin
@@ -40,20 +50,91 @@ module id (
             reg_rd_en1_out = 0;
             reg_rd_en2_out = 0;
             reg_wr_en_out = 0;
+            imm_data = 0;
         end else begin
             aluop_out = `EXE_NOP;
             alusel_out = `EXE_RES_NOP;
-            inst_valid = 1;
+            inst_valid = 0;
             reg_rd_addr1_out = rs;
             reg_rd_addr2_out = rt;
             reg_wr_addr_out = wt; //why
             reg_rd_en1_out = 0;
             reg_rd_en2_out = 0;
             reg_wr_en_out = 0;
-
+            imm_data = 0;
             case (op)
-                `EXE_ORI: begin
-                    aluop_out = `EXE_OP_OR;
+                `EXE_SPEC: begin
+                    case (op4)
+                        5'b00000:begin
+                            case (func_op)
+                                `EXE_OR: begin
+                                    aluop_out = `EXE_OR_OP;
+                                    alusel_out = `EXE_RES_LOGIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_wr_addr_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end 
+                                `EXE_AND: begin
+                                    aluop_out = `EXE_AND_OP;
+                                    alusel_out = `EXE_RES_LOGIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_wr_addr_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_XOR: begin
+                                    aluop_out = `EXE_XOR_OP;
+                                    alusel_out = `EXE_RES_LOGIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_wr_addr_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_NOR: begin
+                                    aluop_out = `EXE_NOR_OP;
+                                    alusel_out = `EXE_RES_LOGIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_wr_addr_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_SLLV:begin
+                                    
+                                end
+                                `EXE_SRLV:begin
+                                    
+                                end
+                                `EXE_SRAV:begin
+                                    
+                                end
+                                `EXE_SYNC:begin
+                                    
+                                end
+                                default: begin
+                                    
+                                end 
+                                endcase
+                        end 
+                        default: 
+                    endcase
+                    
+                end
+
+                `EXE_ORI:  begin
+                    aluop_out = `EXE_ORI_OP;
                     alusel_out = `EXE_RES_LOGIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
@@ -63,16 +144,62 @@ module id (
                     imm_data = {16'h0,im};
                     inst_valid = 1;
                 end
-                default: begin
+                `EXE_ANDI: begin
+                    aluop_out = `EXE_ANDI_OP;
+                    alusel_out = `EXE_RES_LOGIC;
+                    reg_rd_en1_out = 1;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 1;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    imm_data = {16'h0,im};
+                    inst_valid = 1;
+                end
+                `EXE_XORI: begin
+                    aluop_out = `EXE_XORI_OP;
+                    alusel_out = `EXE_RES_LOGIC;
+                    reg_rd_en1_out = 1;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 1;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    imm_data = {16'h0,im};
+                    inst_valid = 1;
+                end
+                `EXE_LUI:  begin
+                    
+                end
+                `EXE_PREF: begin
+                    
+                end
+                default:   begin
                     
                 end
             endcase
+            if(op == 'b0 && rs == 'b0) begin 
+                case (func_op)
+                    `EXE_SLL: begin
+                        
+                    end 
+                    `EXE_SRL: begin
+                        
+                    end
+                    `EXE_SRA: begin
+                        
+                    end
+                    default: 
+                endcase
+            end
         end
     end
 
     always @(*) begin
         if(!rst_n) begin
             reg_rd_data1_out = 0;
+        end else if (reg_rd_en1_out && ex_wen_in && reg_rd_addr1_out == ex_waddr_in) begin
+            reg_rd_data1_out = ex_wdata_in;
+        end else if (reg_rd_en1_out && ex_wen_in && reg_rd_addr1_out == mem_waddr_in) begin
+            reg_rd_data1_out = mem_wdata_in;
         end else if(reg_rd_en1_out == 1) begin
             reg_rd_data1_out = reg_rd_data1_in; //id process, read from regs
         end else if(reg_rd_en1_out == 0) begin
@@ -82,9 +209,13 @@ module id (
         end
     end
 
-     always @(*) begin
+    always @(*) begin
         if(!rst_n) begin
             reg_rd_data2_out = 0;
+        end else if (reg_rd_en2_out && ex_wen_in && reg_rd_addr2_out == ex_waddr_in) begin
+            reg_rd_data2_out = ex_wdata_in;
+        end else if (reg_rd_en2_out && ex_wen_in && reg_rd_addr2_out == mem_waddr_in) begin
+            reg_rd_data2_out = mem_wdata_in;
         end else if(reg_rd_en2_out == 1) begin
             reg_rd_data2_out = reg_rd_data2_in;
         end else if(reg_rd_en2_out == 0) begin

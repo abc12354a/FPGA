@@ -74,7 +74,7 @@ module id (
                                     reg_rd_en2_out = 1;
                                     reg_wr_en_out  = 1;
                                     reg_rd_addr1_out = rs;
-                                    reg_wr_addr_out = rt;
+                                    reg_rd_addr2_out = rt;
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end 
@@ -85,7 +85,7 @@ module id (
                                     reg_rd_en2_out = 1;
                                     reg_wr_en_out  = 1;
                                     reg_rd_addr1_out = rs;
-                                    reg_wr_addr_out = rt;
+                                    reg_rd_addr2_out = rt;
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end
@@ -96,7 +96,7 @@ module id (
                                     reg_rd_en2_out = 1;
                                     reg_wr_en_out  = 1;
                                     reg_rd_addr1_out = rs;
-                                    reg_wr_addr_out = rt;
+                                    reg_rd_addr2_out = rt;
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end
@@ -107,34 +107,68 @@ module id (
                                     reg_rd_en2_out = 1;
                                     reg_wr_en_out  = 1;
                                     reg_rd_addr1_out = rs;
-                                    reg_wr_addr_out = rt;
+                                    reg_rd_addr2_out = rt;
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end
                                 `EXE_SLLV:begin
-                                    
+                                    aluop_out = `EXE_SLL_OP;
+                                    alusel_out = `EXE_RES_SHIFT;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
                                 end
                                 `EXE_SRLV:begin
-                                    
+                                    aluop_out = `EXE_SRL_OP;
+                                    alusel_out = `EXE_RES_SHIFT;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
                                 end
                                 `EXE_SRAV:begin
-                                    
+                                    aluop_out = `EXE_SRA_OP;
+                                    alusel_out = `EXE_RES_SHIFT;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
                                 end
                                 `EXE_SYNC:begin
-                                    
+                                    aluop_out = `EXE_NOP_OP;
+                                    alusel_out = `EXE_RES_NOP;
+                                    reg_rd_en1_out = 0;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
                                 end
                                 default: begin
                                     
                                 end 
-                                endcase
+                            endcase
                         end 
-                        default: 
+                        default: begin
+                            
+                        end
                     endcase
                     
                 end
 
                 `EXE_ORI:  begin
-                    aluop_out = `EXE_ORI_OP;
+                    aluop_out = `EXE_OR_OP;
                     alusel_out = `EXE_RES_LOGIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
@@ -145,7 +179,7 @@ module id (
                     inst_valid = 1;
                 end
                 `EXE_ANDI: begin
-                    aluop_out = `EXE_ANDI_OP;
+                    aluop_out = `EXE_AND_OP;
                     alusel_out = `EXE_RES_LOGIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
@@ -156,7 +190,7 @@ module id (
                     inst_valid = 1;
                 end
                 `EXE_XORI: begin
-                    aluop_out = `EXE_XORI_OP;
+                    aluop_out = `EXE_XOR_OP;
                     alusel_out = `EXE_RES_LOGIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
@@ -167,10 +201,25 @@ module id (
                     inst_valid = 1;
                 end
                 `EXE_LUI:  begin
-                    
+                    aluop_out = `EXE_OR_OP;
+                    alusel_out = `EXE_RES_LOGIC;
+                    reg_rd_en1_out = 1;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 1;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    imm_data = {im,16'h0};
+                    inst_valid = 1;
                 end
                 `EXE_PREF: begin
-                    
+                    aluop_out = `EXE_NOP_OP;
+                    alusel_out = `EXE_RES_LOGIC;
+                    reg_rd_en1_out = 0;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 0;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    inst_valid = 1;
                 end
                 default:   begin
                     
@@ -179,15 +228,44 @@ module id (
             if(op == 'b0 && rs == 'b0) begin 
                 case (func_op)
                     `EXE_SLL: begin
-                        
+                        aluop_out = `EXE_SLL_OP;
+                        alusel_out = `EXE_RES_SHIFT;
+                        reg_rd_en1_out = 0;
+                        reg_rd_en2_out = 1;
+                        reg_wr_en_out  = 1;
+                        reg_rd_addr1_out = rs;
+                        reg_rd_addr2_out = rt;
+                        reg_wr_addr_out = wt;
+                        imm_data = {27'h0,op4};
+                        inst_valid = 1;
                     end 
                     `EXE_SRL: begin
-                        
+                        aluop_out = `EXE_SRL_OP;
+                        alusel_out = `EXE_RES_SHIFT;
+                        reg_rd_en1_out = 0;
+                        reg_rd_en2_out = 1;
+                        reg_wr_en_out  = 1;
+                        reg_rd_addr1_out = rs;
+                        reg_rd_addr2_out = rt;
+                        reg_wr_addr_out = wt;
+                        imm_data = {27'h0,op4};
+                        inst_valid = 1;
                     end
                     `EXE_SRA: begin
+                        aluop_out = `EXE_SRA_OP;
+                        alusel_out = `EXE_RES_SHIFT;
+                        reg_rd_en1_out = 0;
+                        reg_rd_en2_out = 1;
+                        reg_wr_en_out  = 1;
+                        reg_rd_addr1_out = rs;
+                        reg_rd_addr2_out = rt;
+                        reg_wr_addr_out = wt;
+                        imm_data = {27'h0,op4};
+                        inst_valid = 1;
+                    end
+                    default:  begin
                         
                     end
-                    default: 
                 endcase
             end
         end

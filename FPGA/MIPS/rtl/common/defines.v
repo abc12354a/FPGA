@@ -51,3 +51,4 @@
 //********************** SEL **********************
 `define EXE_RES_LOGIC 3'b001
 `define EXE_RES_NOP   3'b000
+`define EXE_RES_SHIFT 3'b010

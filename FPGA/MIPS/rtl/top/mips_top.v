@@ -23,14 +23,14 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data1_2ex;
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data2_2ex;
     wire [`ALUSEL_WIDTH-1:0]    alusel_2ex;
-    wire [`ALUOP_WIDTH-1:0]    aluop_2ex;
+    wire [`ALUOP_WIDTH-1:0]     aluop_2ex;
 
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2ex_dly;
     wire                        reg_wr_en_2ex_dly;
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data1_2ex_dly;
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data2_2ex_dly;
     wire [`ALUSEL_WIDTH-1:0]    alusel_2ex_dly;
-    wire [`ALUOP_WIDTH-1:0]    aluop_2ex_dly;
+    wire [`ALUOP_WIDTH-1:0]     aluop_2ex_dly;
 
 //ex to mem
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2mem;
@@ -41,6 +41,11 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  reg_wr_data_2mem_dly;
     wire                        reg_wr_en_2mem_dly;
 
+//ex to id
+    wire[`REG_ADDR_WIDTH-1:0]   reg_wr_waddr_ex2id = reg_wr_addr_2mem;
+    wire[`REG_DATA_WIDTH-1:0]   reg_wr_wdata_ex2id = reg_wr_data_2mem;
+    wire                        reg_wr_en_ex2id = reg_wr_en_2mem;
+
 //mem to wb
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2wb;
     wire [`REG_DATA_WIDTH-1:0]  reg_wr_data_2wb;
@@ -49,6 +54,11 @@ module mips_top (
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2wb_dly;
     wire [`REG_DATA_WIDTH-1:0]  reg_wr_data_2wb_dly;
     wire                        reg_wr_en_2wb_dly;
+
+//mem to id
+    wire[`REG_ADDR_WIDTH-1:0]   reg_wr_waddr_mem2id = reg_wr_addr_2wb;
+    wire[`REG_DATA_WIDTH-1:0]   reg_wr_wdata_mem2id = reg_wr_data_2wb;
+    wire                        reg_wr_en_mem2id = reg_wr_en_2wb;
 
 
     pc pc0(
@@ -70,6 +80,12 @@ module mips_top (
         .inst_data_in(inst_data_if2id),
         .reg_rd_data1_in(reg_rd_data1_2id),
         .reg_rd_data2_in(reg_rd_data2_2id),
+        .ex_waddr_in(reg_wr_waddr_ex2id),
+        .ex_wdata_in(reg_wr_wdata_ex2id),
+        .ex_wen_in(reg_wr_en_ex2id),
+        .mem_waddr_in(reg_wr_waddr_mem2id),
+        .mem_wdata_in(reg_wr_wdata_mem2id),
+        .mem_wen_in(reg_wr_en_mem2id),
         .reg_rd_addr1_out(reg_rd_addr1_2reg),
         .reg_rd_addr2_out(reg_rd_addr2_2reg),
         .reg_rd_en1_out(reg_rd_en1_2reg),
@@ -88,7 +104,7 @@ module mips_top (
         .waddr(reg_wr_addr_2wb_dly),
         .wdata(reg_wr_data_2wb_dly),
         .raddr1(reg_rd_addr1_2reg),
-        .raddr2(reg_rd_addr1_2reg),
+        .raddr2(reg_rd_addr2_2reg),
         .we(reg_wr_en_2wb_dly),
         .re1(reg_rd_en1_2reg),
         .re2(reg_rd_en2_2reg),

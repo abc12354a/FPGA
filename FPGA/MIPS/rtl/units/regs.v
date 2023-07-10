@@ -14,6 +14,18 @@ module regs (
 );
     reg[`REG_DATA_WIDTH-1:0] regs[`REG_NUM-1:0]; //32 regs
 
+//init regs to all zero
+integer i;
+generate
+    always @(rst_n) begin
+        if(!rst_n)begin
+            for (i=0;i<`REG_NUM;i=i+1) begin
+                regs[i] = 'h0;
+            end
+        end
+    end
+endgenerate
+
 //********************** write operation **********************
     always @(posedge clk) begin
         if(rst_n) begin //non reset
@@ -43,13 +55,13 @@ module regs (
     always @(*) begin //read operation doesn't require clk
         if(!rst_n) begin
             rdata2 = 0;
-        end else if(raddr1 == 'b0) begin
+        end else if(raddr2 == 'b0) begin
             rdata2 = 0;
         end else begin
             if(re2 && we && raddr2 == waddr) begin 
                 rdata2 = wdata;
             end else if(re2)begin
-                rdata2 = regs[raddr1];
+                rdata2 = regs[raddr2];
             end else begin
                 rdata2 = 0;
             end

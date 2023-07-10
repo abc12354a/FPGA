@@ -1,4 +1,4 @@
-all: clean comp simv
+all: clean comp sim
 comp:
 	bsub -I vcs -f ../rtl/file_lst.f -l comp.log +v2k -debug_all -debug_access -full64
 sim:

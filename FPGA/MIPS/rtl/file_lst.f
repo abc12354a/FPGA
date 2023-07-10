@@ -1,0 +1,16 @@
+/home/shutong.zou/Documents/FPGA/MIPS/sim/soc_tb.v
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/
+/home/shutong.zou/Documents/FPGA/MIPS/rtl/units/

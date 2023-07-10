@@ -24,7 +24,7 @@ module id (
     output reg[`REG_DATA_WIDTH-1:0]  reg_rd_data1_out,
     output reg[`REG_DATA_WIDTH-1:0]  reg_rd_data2_out,
     output reg[`ALUSEL_WIDTH-1:0]    alusel_out,
-    output reg[`ALUOP_WIDTH-1:0]     aluop_out                        
+    output reg[`ALUOP_WIDTH-1:0]     aluop_out
 );
     //-------------------------------------------
     //OP(31-26)| RS(25-21)| RT(20-16) | IM(15-0)|
@@ -164,7 +164,6 @@ module id (
                             
                         end
                     endcase
-                    
                 end
 
                 `EXE_ORI:  begin

@@ -7,12 +7,28 @@ module ex (
     input[`REG_ADDR_WIDTH-1:0]  w_reg_addr_in,
     input                       w_reg_en_in,
 
+    input[`REG_ADDR_WIDTH-1:0]  hi_regs_in,
+    input[`REG_ADDR_WIDTH-1:0]  lo_regs_in,
+    
+    input[`REG_ADDR_WIDTH-1:0]  wb_hi_regs_in,
+    input[`REG_ADDR_WIDTH-1:0]  wb_lo_regs_in,
+    input                       wb_hilo_wen,
+
+    input[`REG_ADDR_WIDTH-1:0]  mem_hi_regs_in,
+    input[`REG_ADDR_WIDTH-1:0]  mem_lo_regs_in,
+    input                       mem_hilo_wen,
+
     output reg[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
     output reg[`REG_DATA_WIDTH-1:0] w_reg_data_out,
-    output reg                      w_reg_en_out
+    output reg                      w_reg_en_out,
+
+    output reg[`REG_ADDR_WIDTH-1:0] hi_regs_out,
+    output reg[`REG_ADDR_WIDTH-1:0] lo_regs_out,
+    output reg                      hilo_wen
 );
     reg[`REG_DATA_WIDTH-1:0]    logic_out;
     reg[`REG_DATA_WIDTH-1:0]    shift_res;
+    reg[`REG_DATA_WIDTH-1:0]    move_res;
     always @(*) begin
         if(!rst_n)begin
             logic_out = 0;
@@ -36,6 +52,19 @@ module ex (
                 `EXE_SRL_OP:shift_res = reg2_in >> reg1_in[4:0];
                 `EXE_SRA_OP:shift_res = ({32{reg2_in[31]}} << (6'd32-{'b0,reg1_in[4:0]}))| reg2_in >> reg1_in[4:0];
                 default: shift_res = 0;
+            endcase
+        end
+    end
+
+    always @(*) begin
+        if(!rst_n)begin
+            move_res = 0;
+        end else begin
+            case (aluop_in)
+                `EXE_MOVZ_OP:move_res = reg1_in;
+                `EXE_MOVN_OP:move_res = reg1_in;
+                `EXE_SRA_OP:move_res = ({32{reg2_in[31]}} << (6'd32-{'b0,reg1_in[4:0]}))| reg2_in >> reg1_in[4:0];
+                default: move_res = 0;
             endcase
         end
     end

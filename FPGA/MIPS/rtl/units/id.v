@@ -155,6 +155,72 @@ module id (
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end
+                                `EXE_MOVN: begin
+                                    aluop_out = `EXE_MOVN_OP;
+                                    alusel_out = `EXE_RES_MOVE;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = reg_rd_data1_out == 0? 0:1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_MOVZ: begin
+                                    aluop_out = `EXE_MOVZ_OP;
+                                    alusel_out = `EXE_RES_MOVE;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = reg_rd_data1_out == 0? 1:0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_MFHI: begin
+                                    aluop_out = `EXE_MFHI_OP;
+                                    alusel_out = `EXE_RES_MOVE;
+                                    reg_rd_en1_out = 0;
+                                    reg_rd_en2_out = 0;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_MFLO: begin
+                                    aluop_out = `EXE_MFLO_OP;
+                                    alusel_out = `EXE_RES_MOVE;
+                                    reg_rd_en1_out = 0;
+                                    reg_rd_en2_out = 0;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_MTHI: begin
+                                    aluop_out = `EXE_MTHI_OP;
+                                    alusel_out = `EXE_RES_MOVE;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 0;
+                                    reg_wr_en_out  = 0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_MTLO: begin
+                                    aluop_out = `EXE_MTLO_OP;
+                                    alusel_out = `EXE_RES_MOVE;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 0;
+                                    reg_wr_en_out  = 0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
                                 default: begin
                                     
                                 end 

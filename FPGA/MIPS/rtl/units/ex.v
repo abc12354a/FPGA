@@ -1,22 +1,22 @@
 module ex (
-    input                       rst_n,//async rst?
-    input[`ALUSEL_WIDTH-1:0]    alusel_in,
-    input[`ALUOP_WIDTH-1:0]     aluop_in,
-    input[`REG_DATA_WIDTH-1:0]  reg1_in,
-    input[`REG_DATA_WIDTH-1:0]  reg2_in,
-    input[`REG_ADDR_WIDTH-1:0]  w_reg_addr_in,
-    input                       w_reg_en_in,
+    input                           rst_n,//async rst?
+    input[`ALUSEL_WIDTH-1:0]        alusel_in,
+    input[`ALUOP_WIDTH-1:0]         aluop_in,
+    input[`REG_DATA_WIDTH-1:0]      reg1_in,
+    input[`REG_DATA_WIDTH-1:0]      reg2_in,
+    input[`REG_ADDR_WIDTH-1:0]      w_reg_addr_in,
+    input                           w_reg_en_in,
 
-    input[`REG_ADDR_WIDTH-1:0]  hi_regs_in,
-    input[`REG_ADDR_WIDTH-1:0]  lo_regs_in,
+    input[`REG_ADDR_WIDTH-1:0]      hi_regs_in,
+    input[`REG_ADDR_WIDTH-1:0]      lo_regs_in,
     
-    input[`REG_ADDR_WIDTH-1:0]  wb_hi_regs_in,
-    input[`REG_ADDR_WIDTH-1:0]  wb_lo_regs_in,
-    input                       wb_hilo_wen,
+    input[`REG_ADDR_WIDTH-1:0]      wb_hi_regs_in,
+    input[`REG_ADDR_WIDTH-1:0]      wb_lo_regs_in,
+    input                           wb_hilo_wen,
 
-    input[`REG_ADDR_WIDTH-1:0]  mem_hi_regs_in,
-    input[`REG_ADDR_WIDTH-1:0]  mem_lo_regs_in,
-    input                       mem_hilo_wen,
+    input[`REG_ADDR_WIDTH-1:0]      mem_hi_regs_in,
+    input[`REG_ADDR_WIDTH-1:0]      mem_lo_regs_in,
+    input                           mem_hilo_wen,
 
     output reg[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
     output reg[`REG_DATA_WIDTH-1:0] w_reg_data_out,
@@ -29,6 +29,25 @@ module ex (
     reg[`REG_DATA_WIDTH-1:0]    logic_out;
     reg[`REG_DATA_WIDTH-1:0]    shift_res;
     reg[`REG_DATA_WIDTH-1:0]    move_res;
+    reg[`REG_DATA_WIDTH-1:0]    reg_hi;
+    reg[`REG_DATA_WIDTH-1:0]    reg_lo;
+
+    always @(*) begin
+        if(!rst_n)begin
+            reg_hi = 0;
+            reg_lo = 0;
+        end else if(mem_hilo_wen) begin
+            reg_hi = mem_hi_regs_in;
+            reg_lo = mem_lo_regs_in;
+        end else if(wb_hilo_wen) begin
+            reg_hi = wb_hi_regs_in;
+            reg_lo = wb_lo_regs_in;
+        end else begin
+            reg_hi = hi_regs_in;
+            reg_lo = lo_regs_in;
+        end
+    end
+
     always @(*) begin
         if(!rst_n)begin
             logic_out = 0;
@@ -63,8 +82,35 @@ module ex (
             case (aluop_in)
                 `EXE_MOVZ_OP:move_res = reg1_in;
                 `EXE_MOVN_OP:move_res = reg1_in;
-                `EXE_SRA_OP:move_res = ({32{reg2_in[31]}} << (6'd32-{'b0,reg1_in[4:0]}))| reg2_in >> reg1_in[4:0];
+                `EXE_MFHI_OP:move_res = reg_hi;
+                `EXE_MFLO_OP:move_res = reg_lo;
                 default: move_res = 0;
+            endcase
+        end
+    end
+
+    always @(*) begin
+        if(!rst_n)begin
+            hi_regs_out = 0;
+            lo_regs_out = 0;
+            hilo_wen = 0;
+        end else begin
+            case (aluop_in)
+                `EXE_MTHI_OP:begin
+                    hi_regs_out = reg_hi;
+                    lo_regs_out = 0;
+                    hilo_wen = 1;
+                end
+                `EXE_MTLO_OP:begin
+                    hi_regs_out = 0;
+                    lo_regs_out = reg_lo;
+                    hilo_wen = 1;
+                end
+                default: begin
+                    hi_regs_out = 0;
+                    lo_regs_out = 0;
+                    hilo_wen = 0;
+                end
             endcase
         end
     end
@@ -75,6 +121,7 @@ module ex (
         case (alusel_in)
             `EXE_RES_LOGIC: w_reg_data_out = logic_out; //combination logic
             `EXE_RES_SHIFT: w_reg_data_out = shift_res; 
+            `EXE_RES_MOVE:  w_reg_data_out = move_res;
             default: w_reg_data_out = 0;
         endcase
     end

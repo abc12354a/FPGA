@@ -201,7 +201,7 @@ module id (
                                 end
                                 `EXE_MTHI: begin
                                     aluop_out = `EXE_MTHI_OP;
-                                    alusel_out = `EXE_RES_MOVE;
+                                    // alusel_out = `EXE_RES_MOVE;
                                     reg_rd_en1_out = 1;
                                     reg_rd_en2_out = 0;
                                     reg_wr_en_out  = 0;
@@ -212,7 +212,7 @@ module id (
                                 end
                                 `EXE_MTLO: begin
                                     aluop_out = `EXE_MTLO_OP;
-                                    alusel_out = `EXE_RES_MOVE;
+                                    // alusel_out = `EXE_RES_MOVE;
                                     reg_rd_en1_out = 1;
                                     reg_rd_en2_out = 0;
                                     reg_wr_en_out  = 0;

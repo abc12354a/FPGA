@@ -11,6 +11,11 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data1_2id;
     wire [`REG_DATA_WIDTH-1:0]  reg_rd_data2_2id;
 
+//hilo regs to ex
+    wire [`REG_DATA_WIDTH-1:0]  hi_regs_2ex;
+    wire [`REG_DATA_WIDTH-1:0]  lo_regs_2ex;
+    wire                        hilo_wen_2ex;
+
 //id to reg
     wire [`REG_ADDR_WIDTH-1:0]  reg_rd_addr1_2reg;
     wire [`REG_ADDR_WIDTH-1:0]  reg_rd_addr2_2reg;
@@ -41,6 +46,14 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  reg_wr_data_2mem_dly;
     wire                        reg_wr_en_2mem_dly;
 
+    wire [`REG_DATA_WIDTH-1:0]  hi_regs_2mem;
+    wire [`REG_DATA_WIDTH-1:0]  lo_regs_2mem;
+    wire                        hilo_wen_2mem;
+
+    wire [`REG_DATA_WIDTH-1:0]  hi_regs_2mem_dly;
+    wire [`REG_DATA_WIDTH-1:0]  lo_regs_2mem_dly;
+    wire                        hilo_wen_2mem_dly;
+
 //ex to id
     wire[`REG_ADDR_WIDTH-1:0]   reg_wr_waddr_ex2id = reg_wr_addr_2mem;
     wire[`REG_DATA_WIDTH-1:0]   reg_wr_wdata_ex2id = reg_wr_data_2mem;
@@ -55,10 +68,28 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  reg_wr_data_2wb_dly;
     wire                        reg_wr_en_2wb_dly;
 
+    wire [`REG_DATA_WIDTH-1:0]  hi_regs_2wb;
+    wire [`REG_DATA_WIDTH-1:0]  lo_regs_2wb;
+    wire                        hilo_wen_2wb;
+
+    wire [`REG_DATA_WIDTH-1:0]  hi_regs_2wb_dly;
+    wire [`REG_DATA_WIDTH-1:0]  lo_regs_2wb_dly;
+    wire                        hilo_wen_2wb_dly;
+
+//mem to ex
+    wire [`REG_DATA_WIDTH-1:0]  hi_regs_mem2ex = hi_regs_2wb;
+    wire [`REG_DATA_WIDTH-1:0]  lo_regs_mem2ex = lo_regs_2wb;
+    wire                        hilo_wen_mem2ex = hilo_wen_2wb;
+
 //mem to id
     wire[`REG_ADDR_WIDTH-1:0]   reg_wr_waddr_mem2id = reg_wr_addr_2wb;
     wire[`REG_DATA_WIDTH-1:0]   reg_wr_wdata_mem2id = reg_wr_data_2wb;
     wire                        reg_wr_en_mem2id = reg_wr_en_2wb;
+
+//wb to ex
+    wire [`REG_DATA_WIDTH-1:0]  hi_regs_wb2ex = hi_regs_2wb_dly;
+    wire [`REG_DATA_WIDTH-1:0]  lo_regs_wb2ex = lo_regs_2wb_dly;
+    wire                        hilo_wen_wb2ex = hilo_wen_2wb_dly;
 
 
     pc pc0(
@@ -137,9 +168,20 @@ module mips_top (
         .reg2_in(reg_rd_data2_2ex_dly),
         .w_reg_addr_in(reg_wr_addr_2ex_dly),
         .w_reg_en_in(reg_wr_en_2ex_dly),
+        .hi_regs_in(hi_regs_2ex),
+        .lo_regs_in(lo_regs_2ex),
+        .wb_hi_regs_in(hi_regs_wb2ex),
+        .wb_lo_regs_in(lo_regs_wb2ex),
+        .wb_hilo_wen(hilo_wen_wb2ex),
+        .mem_hi_regs_in(hi_regs_mem2ex),
+        .mem_lo_regs_in(lo_regs_mem2ex),
+        .mem_hilo_wen(hilo_wen_mem2ex),
         .w_reg_addr_out(reg_wr_addr_2mem),
         .w_reg_data_out(reg_wr_data_2mem),
-        .w_reg_en_out(reg_wr_en_2mem)
+        .w_reg_en_out(reg_wr_en_2mem),
+        .hi_regs_out(hi_regs_2mem),
+        .lo_regs_out(lo_regs_2mem),
+        .hilo_wen(hilo_wen_2mem)
     );
 
     ex_mem ex_mem0(
@@ -148,6 +190,12 @@ module mips_top (
         .w_reg_addr_in(reg_wr_addr_2mem),
         .w_reg_data_in(reg_wr_data_2mem),
         .w_reg_en_in(reg_wr_en_2mem),
+        .hi_regs_in(hi_regs_2mem),
+        .lo_regs_in(lo_regs_2mem),
+        .hilo_wen_in(hilo_wen_2mem),
+        .hi_regs_out(hi_regs_2mem_dly),
+        .lo_regs_out(lo_regs_2mem_dly),
+        .hilo_wen_out(hilo_wen_2mem_dly),
         .w_reg_addr_out(reg_wr_addr_2mem_dly),
         .w_reg_data_out(reg_wr_data_2mem_dly),
         .w_reg_en_out(reg_wr_en_2mem_dly)
@@ -158,6 +206,12 @@ module mips_top (
         .w_reg_addr_in(reg_wr_addr_2mem_dly),
         .w_reg_data_in(reg_wr_data_2mem_dly),
         .w_reg_en_in(reg_wr_en_2mem_dly),
+        .hi_regs_in(hi_regs_2mem_dly),
+        .lo_regs_in(lo_regs_2mem_dly),
+        .hilo_wen_in(hilo_wen_2mem_dly),
+        .hi_regs_out(),
+        .lo_regs_out(),
+        .hilo_wen_out(),
         .w_reg_addr_out(reg_wr_addr_2wb),
         .w_reg_data_out(reg_wr_data_2wb),
         .w_reg_en_out(reg_wr_en_2wb)
@@ -169,10 +223,24 @@ module mips_top (
         .w_reg_addr_in(reg_wr_addr_2wb),
         .w_reg_data_in(reg_wr_data_2wb),
         .w_reg_en_in(reg_wr_en_2wb),
+        .hi_regs_in(hi_regs_2wb),
+        .lo_regs_in(lo_regs_2wb),
+        .hilo_wen_in(hilo_wen_2wb),
+        .hi_regs_out(hi_regs_2wb_dly),
+        .lo_regs_out(lo_regs_2wb_dly),
+        .hilo_wen_out(hilo_wen_2wb_dly),
         .w_reg_addr_out(reg_wr_addr_2wb_dly),
         .w_reg_data_out(reg_wr_data_2wb_dly),
         .w_reg_en_out(reg_wr_en_2wb_dly)
     );
 
-    
+    hilo_regs hilo_regs0(
+        .clk(clk),
+        .rst_n(rst_n),
+        .we(hilo_wen_2wb_dly),
+        .hi_data_in(hi_regs_2wb_dly),
+        .lo_data_in(lo_regs_2wb_dly),
+        .hi_data_out(hi_regs_2ex),
+        .lo_data_out(lo_regs_2ex)
+    );
 endmodule

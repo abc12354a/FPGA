@@ -7,23 +7,23 @@ module ex (
     input[`REG_ADDR_WIDTH-1:0]      w_reg_addr_in,
     input                           w_reg_en_in,
 
-    input[`REG_ADDR_WIDTH-1:0]      hi_regs_in,
-    input[`REG_ADDR_WIDTH-1:0]      lo_regs_in,
+    input[`REG_DATA_WIDTH-1:0]      hi_regs_in,
+    input[`REG_DATA_WIDTH-1:0]      lo_regs_in,
     
-    input[`REG_ADDR_WIDTH-1:0]      wb_hi_regs_in,
-    input[`REG_ADDR_WIDTH-1:0]      wb_lo_regs_in,
+    input[`REG_DATA_WIDTH-1:0]      wb_hi_regs_in,
+    input[`REG_DATA_WIDTH-1:0]      wb_lo_regs_in,
     input                           wb_hilo_wen,
 
-    input[`REG_ADDR_WIDTH-1:0]      mem_hi_regs_in,
-    input[`REG_ADDR_WIDTH-1:0]      mem_lo_regs_in,
+    input[`REG_DATA_WIDTH-1:0]      mem_hi_regs_in,
+    input[`REG_DATA_WIDTH-1:0]      mem_lo_regs_in,
     input                           mem_hilo_wen,
 
     output reg[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
     output reg[`REG_DATA_WIDTH-1:0] w_reg_data_out,
     output reg                      w_reg_en_out,
 
-    output reg[`REG_ADDR_WIDTH-1:0] hi_regs_out,
-    output reg[`REG_ADDR_WIDTH-1:0] lo_regs_out,
+    output reg[`REG_DATA_WIDTH-1:0] hi_regs_out,
+    output reg[`REG_DATA_WIDTH-1:0] lo_regs_out,
     output reg                      hilo_wen
 );
     reg[`REG_DATA_WIDTH-1:0]    logic_out;
@@ -69,7 +69,7 @@ module ex (
             case (aluop_in)
                 `EXE_SLL_OP:shift_res = reg2_in << reg1_in[4:0];
                 `EXE_SRL_OP:shift_res = reg2_in >> reg1_in[4:0];
-                `EXE_SRA_OP:shift_res = ({32{reg2_in[31]}} << (6'd32-{'b0,reg1_in[4:0]}))| reg2_in >> reg1_in[4:0];
+                `EXE_SRA_OP:shift_res = ({32{reg2_in[31]}} << (6'd32-{1'b0,reg1_in[4:0]}))| reg2_in >> reg1_in[4:0];
                 default: shift_res = 0;
             endcase
         end
@@ -97,13 +97,13 @@ module ex (
         end else begin
             case (aluop_in)
                 `EXE_MTHI_OP:begin
-                    hi_regs_out = reg_hi;
+                    hi_regs_out = reg1_in;
                     lo_regs_out = 0;
                     hilo_wen = 1;
                 end
                 `EXE_MTLO_OP:begin
                     hi_regs_out = 0;
-                    lo_regs_out = reg_lo;
+                    lo_regs_out = reg1_in;
                     hilo_wen = 1;
                 end
                 default: begin

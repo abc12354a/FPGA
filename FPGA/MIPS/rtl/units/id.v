@@ -160,7 +160,7 @@ module id (
                                     alusel_out = `EXE_RES_MOVE;
                                     reg_rd_en1_out = 1;
                                     reg_rd_en2_out = 1;
-                                    reg_wr_en_out  = reg_rd_data1_out == 0? 0:1;
+                                    reg_wr_en_out  = reg_rd_data2_out == 0? 0:1;
                                     reg_rd_addr1_out = rs;
                                     reg_rd_addr2_out = rt;
                                     reg_wr_addr_out = wt;
@@ -171,7 +171,7 @@ module id (
                                     alusel_out = `EXE_RES_MOVE;
                                     reg_rd_en1_out = 1;
                                     reg_rd_en2_out = 1;
-                                    reg_wr_en_out  = reg_rd_data1_out == 0? 1:0;
+                                    reg_wr_en_out  = reg_rd_data2_out == 0? 1:0;
                                     reg_rd_addr1_out = rs;
                                     reg_rd_addr2_out = rt;
                                     reg_wr_addr_out = wt;

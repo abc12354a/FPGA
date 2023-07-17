@@ -209,9 +209,9 @@ module mips_top (
         .hi_regs_in(hi_regs_2mem_dly),
         .lo_regs_in(lo_regs_2mem_dly),
         .hilo_wen_in(hilo_wen_2mem_dly),
-        .hi_regs_out(),
-        .lo_regs_out(),
-        .hilo_wen_out(),
+        .hi_regs_out(hi_regs_2wb),
+        .lo_regs_out(lo_regs_2wb),
+        .hilo_wen_out(hilo_wen_2wb),
         .w_reg_addr_out(reg_wr_addr_2wb),
         .w_reg_data_out(reg_wr_data_2wb),
         .w_reg_en_out(reg_wr_en_2wb)

@@ -26,11 +26,26 @@ module ex (
     output reg[`REG_DATA_WIDTH-1:0] lo_regs_out,
     output reg                      hilo_wen
 );
-    reg[`REG_DATA_WIDTH-1:0]    logic_out;
+    reg[`REG_DATA_WIDTH-1:0]    logic_res;
     reg[`REG_DATA_WIDTH-1:0]    shift_res;
     reg[`REG_DATA_WIDTH-1:0]    move_res;
+    reg[`REG_DATA_WIDTH-1:0]    arith_res;
     reg[`REG_DATA_WIDTH-1:0]    reg_hi;
     reg[`REG_DATA_WIDTH-1:0]    reg_lo;
+    
+    wire                        over_mem;
+    wire                        reg1_eq_reg2;
+    wire                        reg1_lt_reg2; //reg1 < reg2
+    wire[`REG_DATA_WIDTH-1:0]   reg2_mux;
+    wire[`REG_DATA_WIDTH-1:0]   reg1_not;
+    wire[`REG_DATA_WIDTH-1:0]   sum_res;
+    wire[`REG_DATA_WIDTH-1:0]   mul_op1;
+    wire[`REG_DATA_WIDTH-1:0]   mul_op2;
+    wire[64-1:0]               hilo_tmp;
+    reg[64-1:0]                 mul_res;
+
+    assign reg2_mux = 
+
 
     always @(*) begin
         if(!rst_n)begin
@@ -50,14 +65,14 @@ module ex (
 
     always @(*) begin
         if(!rst_n)begin
-            logic_out = 0;
+            logic_res = 0;
         end else begin
             case (aluop_in)
-                `EXE_OR_OP: logic_out = reg1_in | reg2_in;
-                `EXE_AND_OP:logic_out = reg1_in & reg2_in;
-                `EXE_NOR_OP:logic_out = ~(reg1_in | reg2_in);
-                `EXE_XOR_OP:logic_out = reg1_in ^ reg2_in;
-                default: logic_out = 0;
+                `EXE_OR_OP: logic_res = reg1_in | reg2_in;
+                `EXE_AND_OP:logic_res = reg1_in & reg2_in;
+                `EXE_NOR_OP:logic_res = ~(reg1_in | reg2_in);
+                `EXE_XOR_OP:logic_res = reg1_in ^ reg2_in;
+                default: logic_res = 0;
             endcase
         end
     end
@@ -119,7 +134,7 @@ module ex (
         w_reg_addr_out = w_reg_addr_in;
         w_reg_en_out   = w_reg_en_in;
         case (alusel_in)
-            `EXE_RES_LOGIC: w_reg_data_out = logic_out; //combination logic
+            `EXE_RES_LOGIC: w_reg_data_out = logic_res; //combination logic
             `EXE_RES_SHIFT: w_reg_data_out = shift_res; 
             `EXE_RES_MOVE:  w_reg_data_out = move_res;
             default: w_reg_data_out = 0;

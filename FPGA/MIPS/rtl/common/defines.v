@@ -34,9 +34,34 @@
 `define EXE_MFLO  6'b010010
 `define EXE_MTLO  6'b010011
 
+`define EXE_SLT   6'b101010
+`define EXE_SLTU  6'b101011
+`define EXE_SLTI  6'b001010
+`define EXE_SLTIU 6'b001011   
+`define EXE_ADD   6'b100000
+`define EXE_ADDU  6'b100001
+`define EXE_SUB   6'b100010
+`define EXE_SUBU  6'b100011
+`define EXE_ADDI  6'b001000
+`define EXE_ADDIU 6'b001001
+`define EXE_CLZ   6'b100000
+`define EXE_CLO   6'b100001
+
+
+`define EXE_MULT  6'b011000
+`define EXE_MULTU 6'b011001
+`define EXE_MUL   6'b000010
+`define EXE_MADD  6'b000000
+`define EXE_MADDU 6'b000001
+`define EXE_MSUB  6'b000100
+`define EXE_MSUBU 6'b000101
+
 `define EXE_SYNC  6'b001111
 `define EXE_PREF  6'b110011
+
+//******************** R_OP **********************
 `define EXE_SPEC  6'b000000
+`define EXE_SPEC2 6'b011100
 //********************** OP **********************
 `define EXE_AND_OP    8'b0010_0100
 `define EXE_OR_OP     8'b0010_0101
@@ -61,9 +86,32 @@
 `define EXE_MFLO_OP   8'b0001_0010
 `define EXE_MTLO_OP   8'b0001_0011
 
+`define EXE_SLT_OP    8'b0010_1010
+`define EXE_SLTU_OP   8'b0010_1011
+`define EXE_SLTI_OP   8'b0101_0111
+`define EXE_SLTIU_OP  8'b0101_1000   
+`define EXE_ADD_OP    8'b0010_0000
+`define EXE_ADDU_OP   8'b0010_0001
+`define EXE_SUB_OP    8'b0010_0010
+`define EXE_SUBU_OP   8'b0010_0011
+`define EXE_ADDI_OP   8'b0101_0101
+`define EXE_ADDIU_OP  8'b0101_0110
+`define EXE_CLZ_OP    8'b1011_0000
+`define EXE_CLO_OP    8'b1011_0001
+
+`define EXE_MULT_OP   8'b0001_1000
+`define EXE_MULTU_OP  8'b0001_1001
+`define EXE_MUL_OP    8'b1010_1001
+`define EXE_MADD_OP   8'b1010_0110
+`define EXE_MADDU_OP  8'b1010_1000
+`define EXE_MSUB_OP   8'b1010_1010
+`define EXE_MSUBU_OP  8'b1010_1011
+
 `define EXE_NOP_OP    8'b0000_0000
 //********************** SEL **********************
-`define EXE_RES_LOGIC 3'b001
-`define EXE_RES_NOP   3'b000
-`define EXE_RES_SHIFT 3'b010
-`define EXE_RES_MOVE  3'b011
+`define EXE_RES_LOGIC      3'b001
+`define EXE_RES_NOP        3'b000
+`define EXE_RES_SHIFT      3'b010
+`define EXE_RES_MOVE       3'b011
+`define EXE_RES_ARITHMETIC 3'b100	
+`define EXE_RES_MUL        3'b101

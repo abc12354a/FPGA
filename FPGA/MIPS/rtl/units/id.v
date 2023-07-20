@@ -201,7 +201,6 @@ module id (
                                 end
                                 `EXE_MTHI: begin
                                     aluop_out = `EXE_MTHI_OP;
-                                    // alusel_out = `EXE_RES_MOVE;
                                     reg_rd_en1_out = 1;
                                     reg_rd_en2_out = 0;
                                     reg_wr_en_out  = 0;
@@ -212,7 +211,6 @@ module id (
                                 end
                                 `EXE_MTLO: begin
                                     aluop_out = `EXE_MTLO_OP;
-                                    // alusel_out = `EXE_RES_MOVE;
                                     reg_rd_en1_out = 1;
                                     reg_rd_en2_out = 0;
                                     reg_wr_en_out  = 0;
@@ -221,17 +219,154 @@ module id (
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end
+                                `EXE_SLT: begin
+                                    aluop_out = `EXE_SLT_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_SLTU: begin
+                                    aluop_out = `EXE_SLTU_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_ADD: begin
+                                    aluop_out = `EXE_ADD_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_ADDU: begin
+                                    aluop_out = `EXE_ADDU_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_SUB: begin
+                                    aluop_out = `EXE_SUB_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_SUBU: begin
+                                    aluop_out = `EXE_SUBU_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_MULT: begin
+                                    aluop_out = `EXE_MULT_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_MULTU: begin
+                                    aluop_out = `EXE_MULTU_OP;
+                                    alusel_out = `EXE_RES_ARITHMETIC;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 1;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
                                 default: begin
-                                    
+                                    aluop_out = `EXE_NOP_OP;
+                                    alusel_out = `EXE_RES_LOGIC;
+                                    reg_rd_en1_out = 0;
+                                    reg_rd_en2_out = 0;
+                                    reg_wr_en_out  = 0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_wr_addr_out = rt;
+                                    inst_valid = 1;
                                 end 
                             endcase
                         end 
                         default: begin
-                            
+                            aluop_out = `EXE_NOP_OP;
+                            alusel_out = `EXE_RES_LOGIC;
+                            reg_rd_en1_out = 0;
+                            reg_rd_en2_out = 0;
+                            reg_wr_en_out  = 0;
+                            reg_rd_addr1_out = rs;
+                            reg_wr_addr_out = rt;
+                            inst_valid = 1;
                         end
                     endcase
                 end
-
+                `EXE_SPEC2:begin
+                    case (func_op)
+                        `EXE_CLZ:begin
+                            aluop_out = `EXE_CLZ_OP;
+                            alusel_out = `EXE_RES_ARITHMETIC;
+                            reg_rd_en1_out = 1;
+                            reg_rd_en2_out = 0;
+                            reg_wr_en_out  = 1;
+                            reg_rd_addr1_out = rs;
+                            reg_wr_addr_out = wt;
+                            inst_valid = 1;
+                        end 
+                        `EXE_CLO:begin
+                            aluop_out = `EXE_CLO_OP;
+                            alusel_out = `EXE_RES_ARITHMETIC;
+                            reg_rd_en1_out = 1;
+                            reg_rd_en2_out = 0;
+                            reg_wr_en_out  = 1;
+                            reg_rd_addr1_out = rs;
+                            reg_wr_addr_out = wt;
+                            inst_valid = 1;
+                        end
+                        `EXE_MUL:begin
+                            aluop_out = `EXE_MUL_OP;
+                            alusel_out = `EXE_RES_ARITHMETIC;
+                            reg_rd_en1_out = 1;
+                            reg_rd_en2_out = 1;
+                            reg_wr_en_out  = 1;
+                            reg_rd_addr1_out = rs;
+                            reg_rd_addr2_out = rt;
+                            reg_wr_addr_out = wt;
+                            inst_valid = 1;
+                        end
+                        default: 
+                    endcase
+                end
                 `EXE_ORI:  begin
                     aluop_out = `EXE_OR_OP;
                     alusel_out = `EXE_RES_LOGIC;
@@ -286,8 +421,59 @@ module id (
                     reg_wr_addr_out = rt;
                     inst_valid = 1;
                 end
+                `EXE_SLTI: begin
+                    aluop_out = `EXE_SLTI_OP;
+                    alusel_out = `EXE_RES_ARITHMETIC;
+                    reg_rd_en1_out = 1;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 0;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    imm_data = {{16{im[15]}},im};
+                    inst_valid = 1;
+                end
+                `EXE_SLTIU: begin
+                    aluop_out = `EXE_SLTIU_OP;
+                    alusel_out = `EXE_RES_ARITHMETIC;
+                    reg_rd_en1_out = 1;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 0;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    imm_data = {{16{im[15]}},im};
+                    inst_valid = 1;
+                end
+                `EXE_ADDI: begin
+                    aluop_out = `EXE_ADDI_OP;
+                    alusel_out = `EXE_RES_ARITHMETIC;
+                    reg_rd_en1_out = 1;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 0;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    imm_data = {{16{im[15]}},im};
+                    inst_valid = 1;
+                end
+                `EXE_ADDIU: begin
+                    aluop_out = `EXE_ADDIU_OP;
+                    alusel_out = `EXE_RES_ARITHMETIC;
+                    reg_rd_en1_out = 1;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 0;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    imm_data = {{16{im[15]}},im};
+                    inst_valid = 1;
+                end
                 default:   begin
-                    
+                    aluop_out = `EXE_NOP_OP;
+                    alusel_out = `EXE_RES_LOGIC;
+                    reg_rd_en1_out = 0;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 0;
+                    reg_rd_addr1_out = rs;
+                    reg_wr_addr_out = rt;
+                    inst_valid = 1;
                 end
             endcase
             if(op == 'b0 && rs == 'b0) begin 
@@ -329,7 +515,14 @@ module id (
                         inst_valid = 1;
                     end
                     default:  begin
-                        
+                        aluop_out = `EXE_NOP_OP;
+                        alusel_out = `EXE_RES_LOGIC;
+                        reg_rd_en1_out = 0;
+                        reg_rd_en2_out = 0;
+                        reg_wr_en_out  = 0;
+                        reg_rd_addr1_out = rs;
+                        reg_wr_addr_out = rt;
+                        inst_valid = 1;
                     end
                 endcase
             end

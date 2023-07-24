@@ -355,7 +355,7 @@ module id (
                         end
                         `EXE_MUL:begin
                             aluop_out = `EXE_MUL_OP;
-                            alusel_out = `EXE_RES_ARITHMETIC;
+                            alusel_out = `EXE_RES_MUL;
                             reg_rd_en1_out = 1;
                             reg_rd_en2_out = 1;
                             reg_wr_en_out  = 1;
@@ -364,7 +364,9 @@ module id (
                             reg_wr_addr_out = wt;
                             inst_valid = 1;
                         end
-                        default: 
+                        default: begin
+                            
+                        end
                     endcase
                 end
                 `EXE_ORI:  begin

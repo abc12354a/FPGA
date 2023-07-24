@@ -30,6 +30,7 @@ module ex (
     reg[`REG_DATA_WIDTH-1:0]    shift_res;
     reg[`REG_DATA_WIDTH-1:0]    move_res;
     reg[`REG_DATA_WIDTH-1:0]    arith_res;
+    reg[64-1:0]                 mul_res;
     reg[`REG_DATA_WIDTH-1:0]    reg_hi;
     reg[`REG_DATA_WIDTH-1:0]    reg_lo;
     
@@ -42,10 +43,32 @@ module ex (
     wire[`REG_DATA_WIDTH-1:0]   mul_op1;
     wire[`REG_DATA_WIDTH-1:0]   mul_op2;
     wire[64-1:0]               hilo_tmp;
-    reg[64-1:0]                 mul_res;
 
-    assign reg2_mux = 
 
+    assign reg2_mux = ((aluop_in == `EXE_SUB_OP )||
+                       (aluop_in == `EXE_SUBU_OP)||
+                       (aluop_in == `EXE_SLT_OP)) ? (~reg2_in)+1 : reg2_in;
+    
+    assign reg1_not = ~reg1_in;
+
+    assign sum_res  = reg1_in + reg2_mux;
+
+    assign over_mem = (!reg1_in[31] && !reg2_mux[31] && sum_res[31])||
+                      ( reg1_in[31] &&  reg2_mux[31] && !sum_res[31]);
+
+    assign reg1_lt_reg2 = (aluop_in == `EXE_SLT_OP)?
+                          ( reg1_in[31] && !reg2_in[31])|| 
+                          ( reg1_in[31] &&  reg2_in[31] &&  sum_res[31])||
+                          (!reg1_in[31] && !reg2_in[31] &&  sum_res[31]):
+                          (reg1_in < reg2_in);
+
+    assign mul_op1  = (aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP)&&reg1_in[31] ?
+                      (~reg1_in + 1) : reg1_in;
+    
+    assign mul_op2  = (aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP)&&reg2_in[31] ?
+                      (~reg2_in + 1) : reg2_in;
+
+    assign hilo_tmp =  mul_op1*mul_op2;                  
 
     always @(*) begin
         if(!rst_n)begin
@@ -65,6 +88,23 @@ module ex (
 
     always @(*) begin
         if(!rst_n)begin
+            mul_res = 0;
+        end else begin
+            case (aluop_in)
+                `EXE_MUL_OP, `EXE_MULT_OP : begin
+                    if (reg1_in[31] ^ reg2_in[31]) begin
+                        mul_res = ~hilo_tmp + 1;
+                    end else begin
+                        mul_res = hilo_tmp;
+                    end
+                end
+                default: mul_res = hilo_tmp;
+            endcase
+        end
+    end
+
+    always @(*) begin
+        if(!rst_n)begin
             logic_res = 0;
         end else begin
             case (aluop_in)
@@ -73,6 +113,45 @@ module ex (
                 `EXE_NOR_OP:logic_res = ~(reg1_in | reg2_in);
                 `EXE_XOR_OP:logic_res = reg1_in ^ reg2_in;
                 default: logic_res = 0;
+            endcase
+        end
+    end
+
+    always @(*) begin
+        if(!rst_n)begin
+            arith_res = 0;
+        end else begin
+            case(aluop_in) 
+                `EXE_SLT_OP, `EXE_SLTIU_OP: arith_res = reg1_lt_reg2;
+                `EXE_ADD_OP, `EXE_ADDU_OP, `EXE_ADDI_OP, `EXE_ADDIU_OP: arith_res = sum_res;
+                `EXE_SUB_OP, `EXE_SUBU_OP: arith_res = sum_res;
+                `EXE_CLZ_OP: begin
+                    arith_res = reg1_in[31] ? 'd0  : reg1_in[30]  ? 'd1  : reg1_in[29] ? 'd2  :
+                                reg1_in[28] ? 'd3  : reg1_in[27]  ? 'd4  : reg1_in[26] ? 'd5  :
+                                reg1_in[25] ? 'd6  : reg1_in[24]  ? 'd7  : reg1_in[23] ? 'd8  : 
+                                reg1_in[22] ? 'd9  : reg1_in[21]  ? 'd10 : reg1_in[20] ? 'd11 :
+                                reg1_in[19] ? 'd12 : reg1_in[18] ? 'd13  : reg1_in[17] ? 'd14 : 
+                                reg1_in[16] ? 'd15 : reg1_in[15] ? 'd16  : reg1_in[14] ? 'd17 : 
+                                reg1_in[13] ? 'd18 : reg1_in[12] ? 'd19  : reg1_in[11] ? 'd20 :
+                                reg1_in[10] ? 'd21 : reg1_in[9]  ? 'd22  : reg1_in[8]  ? 'd23 : 
+                                reg1_in[7]  ? 'd24 : reg1_in[6]  ? 'd25  : reg1_in[5]  ? 'd26 : 
+                                reg1_in[4]  ? 'd27 : reg1_in[3]  ? 'd28  : reg1_in[2]  ? 'd29 : 
+                                reg1_in[1]  ? 'd30 : reg1_in[0]  ? 'd31  : 'd32 ;
+                end
+                `EXE_CLO_OP: begin
+                    arith_res = reg1_not[31]  ? 'd0  : reg1_not[30] ? 'd1  : reg1_not[29] ? 'd2  :
+                                reg1_not[28]  ? 'd3  : reg1_not[27] ? 'd4  : reg1_not[26] ? 'd5  :
+                                reg1_not[25]  ? 'd6  : reg1_not[24] ? 'd7  : reg1_not[23] ? 'd8  : 
+                                reg1_not[22]  ? 'd9  : reg1_not[21] ? 'd10 : reg1_not[20] ? 'd11 :
+                                reg1_not[19]  ? 'd12 : reg1_not[18] ? 'd13 : reg1_not[17] ? 'd14 : 
+                                reg1_not[16]  ? 'd15 : reg1_not[15] ? 'd16 : reg1_not[14] ? 'd17 : 
+                                reg1_not[13]  ? 'd18 : reg1_not[12] ? 'd19 : reg1_not[11] ? 'd20 :
+                                reg1_not[10]  ? 'd21 : reg1_not[9]  ? 'd22 : reg1_not[8]  ? 'd23 : 
+                                reg1_not[7]   ? 'd24 : reg1_not[6]  ? 'd25 : reg1_not[5]  ? 'd26 : 
+                                reg1_not[4]   ? 'd27 : reg1_not[3]  ? 'd28 : reg1_not[2]  ? 'd29 : 
+                                reg1_not[1]   ? 'd30 : reg1_not[0]  ? 'd31 : 'd32 ;
+                end
+                default: arith_res = 0;
             endcase
         end
     end
@@ -121,6 +200,11 @@ module ex (
                     lo_regs_out = reg1_in;
                     hilo_wen = 1;
                 end
+                `EXE_MULT_OP, `EXE_MULTU_OP: begin
+                    hi_regs_out = mul_res[63:32];
+                    lo_regs_out = mul_res[31:0];
+                    hilo_wen = 1;
+                end
                 default: begin
                     hi_regs_out = 0;
                     lo_regs_out = 0;
@@ -131,12 +215,18 @@ module ex (
     end
     
     always @(*) begin
+        if((aluop_in == `EXE_ADD_OP || aluop_in == `EXE_ADDI_OP || aluop_in == `EXE_SUB_OP)&&over_mem) begin
+            w_reg_en_out = 0;
+        end else begin
+            w_reg_en_out   = w_reg_en_in;
+        end
         w_reg_addr_out = w_reg_addr_in;
-        w_reg_en_out   = w_reg_en_in;
         case (alusel_in)
-            `EXE_RES_LOGIC: w_reg_data_out = logic_res; //combination logic
-            `EXE_RES_SHIFT: w_reg_data_out = shift_res; 
-            `EXE_RES_MOVE:  w_reg_data_out = move_res;
+            `EXE_RES_LOGIC:       w_reg_data_out = logic_res; //combination logic
+            `EXE_RES_SHIFT:       w_reg_data_out = shift_res; 
+            `EXE_RES_MOVE:        w_reg_data_out = move_res;
+            `EXE_RES_MUL:         w_reg_data_out = mul_res;
+            `EXE_RES_ARITHMETIC:  w_reg_data_out = arith_res;
             default: w_reg_data_out = 0;
         endcase
     end

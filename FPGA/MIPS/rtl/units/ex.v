@@ -62,10 +62,10 @@ module ex (
                           (!reg1_in[31] && !reg2_in[31] &&  sum_res[31]):
                           (reg1_in < reg2_in);
 
-    assign mul_op1  = (aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP)&&reg1_in[31] ?
+    assign mul_op1  = ((aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP))&&reg1_in[31] ?
                       (~reg1_in + 1) : reg1_in;
     
-    assign mul_op2  = (aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP)&&reg2_in[31] ?
+    assign mul_op2  = ((aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP))&&reg2_in[31] ?
                       (~reg2_in + 1) : reg2_in;
 
     assign hilo_tmp =  mul_op1*mul_op2;                  
@@ -122,7 +122,7 @@ module ex (
             arith_res = 0;
         end else begin
             case(aluop_in) 
-                `EXE_SLT_OP, `EXE_SLTIU_OP: arith_res = reg1_lt_reg2;
+                `EXE_SLT_OP, `EXE_SLTU_OP: arith_res = reg1_lt_reg2;
                 `EXE_ADD_OP, `EXE_ADDU_OP, `EXE_ADDI_OP, `EXE_ADDIU_OP: arith_res = sum_res;
                 `EXE_SUB_OP, `EXE_SUBU_OP: arith_res = sum_res;
                 `EXE_CLZ_OP: begin
@@ -225,7 +225,7 @@ module ex (
             `EXE_RES_LOGIC:       w_reg_data_out = logic_res; //combination logic
             `EXE_RES_SHIFT:       w_reg_data_out = shift_res; 
             `EXE_RES_MOVE:        w_reg_data_out = move_res;
-            `EXE_RES_MUL:         w_reg_data_out = mul_res;
+            `EXE_RES_MUL:         w_reg_data_out = mul_res[31:0];
             `EXE_RES_ARITHMETIC:  w_reg_data_out = arith_res;
             default: w_reg_data_out = 0;
         endcase

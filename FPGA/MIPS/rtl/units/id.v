@@ -424,22 +424,22 @@ module id (
                     inst_valid = 1;
                 end
                 `EXE_SLTI: begin
-                    aluop_out = `EXE_SLTI_OP;
+                    aluop_out = `EXE_SLT_OP;
                     alusel_out = `EXE_RES_ARITHMETIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
-                    reg_wr_en_out  = 0;
+                    reg_wr_en_out  = 1;
                     reg_rd_addr1_out = rs;
                     reg_wr_addr_out = rt;
                     imm_data = {{16{im[15]}},im};
                     inst_valid = 1;
                 end
                 `EXE_SLTIU: begin
-                    aluop_out = `EXE_SLTIU_OP;
+                    aluop_out = `EXE_SLTU_OP;
                     alusel_out = `EXE_RES_ARITHMETIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
-                    reg_wr_en_out  = 0;
+                    reg_wr_en_out  = 1;
                     reg_rd_addr1_out = rs;
                     reg_wr_addr_out = rt;
                     imm_data = {{16{im[15]}},im};
@@ -450,7 +450,7 @@ module id (
                     alusel_out = `EXE_RES_ARITHMETIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
-                    reg_wr_en_out  = 0;
+                    reg_wr_en_out  = 1;
                     reg_rd_addr1_out = rs;
                     reg_wr_addr_out = rt;
                     imm_data = {{16{im[15]}},im};
@@ -461,7 +461,7 @@ module id (
                     alusel_out = `EXE_RES_ARITHMETIC;
                     reg_rd_en1_out = 1;
                     reg_rd_en2_out = 0;
-                    reg_wr_en_out  = 0;
+                    reg_wr_en_out  = 1;
                     reg_rd_addr1_out = rs;
                     reg_wr_addr_out = rt;
                     imm_data = {{16{im[15]}},im};
@@ -552,7 +552,7 @@ module id (
             reg_rd_data2_out = 0;
         end else if (reg_rd_en2_out && ex_wen_in && reg_rd_addr2_out == ex_waddr_in) begin
             reg_rd_data2_out = ex_wdata_in;
-        end else if (reg_rd_en2_out && ex_wen_in && reg_rd_addr2_out == mem_waddr_in) begin
+        end else if (reg_rd_en2_out && mem_wen_in && reg_rd_addr2_out == mem_waddr_in) begin
             reg_rd_data2_out = mem_wdata_in;
         end else if(reg_rd_en2_out == 1) begin
             reg_rd_data2_out = reg_rd_data2_in;

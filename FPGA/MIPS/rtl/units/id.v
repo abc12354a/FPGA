@@ -14,6 +14,7 @@ module id (
     input[`REG_DATA_WIDTH-1:0]   mem_wdata_in,
     input                        mem_wen_in,
 
+    output reg                       stall_req,
     output reg[`REG_ADDR_WIDTH-1:0]  reg_rd_addr1_out,
     output reg[`REG_ADDR_WIDTH-1:0]  reg_rd_addr2_out,
     output reg                       reg_rd_en1_out,
@@ -363,6 +364,50 @@ module id (
                             reg_rd_addr2_out = rt;
                             reg_wr_addr_out = wt;
                             inst_valid = 1;
+                        end
+                        `EXE_MADD: begin
+                            aluop_out = `EXE_MADD_OP;
+                            alusel_out = `EXE_RES_MUL;
+                            reg_rd_en1_out = 1;
+                            reg_rd_en2_out = 1;
+                            reg_wr_en_out  = 0;
+                            reg_rd_addr1_out = rs;
+                            reg_rd_addr2_out = rt;
+                            reg_wr_addr_out = wt;
+                            inst_valid = 1;
+                        end
+                        `EXE_MADDU: begin
+                            aluop_out = `EXE_MADDU_OP;
+                            alusel_out = `EXE_RES_MUL;
+                            reg_rd_en1_out = 1;
+                            reg_rd_en2_out = 1;
+                            reg_wr_en_out  = 0;
+                            reg_rd_addr1_out = rs;
+                            reg_rd_addr2_out = rt;
+                            reg_wr_addr_out = wt;
+                            inst_valid = 1;
+                        end
+                        `EXE_MSUB: begin
+                            aluop_out = `EXE_MSUB_OP;
+                            alusel_out = `EXE_RES_MUL;
+                            reg_rd_en1_out = 1;
+                            reg_rd_en2_out = 1;
+                            reg_wr_en_out  = 0;
+                            reg_rd_addr1_out = rs;
+                            reg_rd_addr2_out = rt;
+                            reg_wr_addr_out = wt;
+                            inst_valid = 1;                            
+                        end
+                        `EXE_SUBU: begin
+                            aluop_out = `EXE_MSUBU_OP;
+                            alusel_out = `EXE_RES_MUL;
+                            reg_rd_en1_out = 1;
+                            reg_rd_en2_out = 1;
+                            reg_wr_en_out  = 0;
+                            reg_rd_addr1_out = rs;
+                            reg_rd_addr2_out = rt;
+                            reg_wr_addr_out = wt;
+                            inst_valid = 1;                            
                         end
                         default: begin
                             

@@ -37,6 +37,9 @@ module mips_top (
     wire [`ALUSEL_WIDTH-1:0]    alusel_2ex_dly;
     wire [`ALUOP_WIDTH-1:0]     aluop_2ex_dly;
 
+//id to ctrl
+    wire [`CTRL_WIDTH-1:0]      ctrl_req_from_id;
+
 //ex to mem
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2mem;
     wire [`REG_DATA_WIDTH-1:0]  reg_wr_data_2mem;
@@ -58,6 +61,9 @@ module mips_top (
     wire[`REG_ADDR_WIDTH-1:0]   reg_wr_waddr_ex2id = reg_wr_addr_2mem;
     wire[`REG_DATA_WIDTH-1:0]   reg_wr_wdata_ex2id = reg_wr_data_2mem;
     wire                        reg_wr_en_ex2id = reg_wr_en_2mem;
+
+//ex to ctrl
+    wire [`CTRL_WIDTH-1:0]      ctrl_req_from_ex;
 
 //mem to wb
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2wb;
@@ -91,10 +97,13 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  lo_regs_wb2ex = lo_regs_2wb_dly;
     wire                        hilo_wen_wb2ex = hilo_wen_2wb_dly;
 
+// ctrl to modules
+    wire [`CTRL_WIDTH-1:0]      ctrl_out;
 
     pc pc0(
         .clk(clk),
         .rst_n(rst_n),
+        .stall(ctrl_out),
         .addr_to_rom(rom_addr_out),
         .pc_enable(rom_enable)
     );
@@ -102,6 +111,7 @@ module mips_top (
     if_id if_id0(
         .clk(clk),
         .rst_n(rst_n),
+        .stall(ctrl_out),
         .inst_in(rom_data_in),
         .inst_out(inst_data_if2id)
     );
@@ -109,6 +119,7 @@ module mips_top (
     id id0(
         .rst_n(rst_n),
         .inst_data_in(inst_data_if2id),
+        .stall(ctrl_out),
         .reg_rd_data1_in(reg_rd_data1_2id),
         .reg_rd_data2_in(reg_rd_data2_2id),
         .ex_waddr_in(reg_wr_waddr_ex2id),
@@ -146,6 +157,7 @@ module mips_top (
     id_ex id_ex0(
         .clk(clk),
         .rst_n(rst_n),
+        .stall(ctrl_out),
         .reg_wr_addr_in(reg_wr_addr_2ex),
         .reg_wr_en_in(reg_wr_en_2ex),
         .reg_rd_data1_in(reg_rd_data1_2ex),
@@ -187,6 +199,7 @@ module mips_top (
     ex_mem ex_mem0(
         .clk(clk),
         .rst_n(rst_n),
+        .stall(ctrl_out),
         .w_reg_addr_in(reg_wr_addr_2mem),
         .w_reg_data_in(reg_wr_data_2mem),
         .w_reg_en_in(reg_wr_en_2mem),
@@ -220,6 +233,7 @@ module mips_top (
     mem_wb mem_wb0(
         .clk(clk),
         .rst_n(rst_n),
+        .stall(ctrl_out),
         .w_reg_addr_in(reg_wr_addr_2wb),
         .w_reg_data_in(reg_wr_data_2wb),
         .w_reg_en_in(reg_wr_en_2wb),
@@ -242,5 +256,12 @@ module mips_top (
         .lo_data_in(lo_regs_2wb_dly),
         .hi_data_out(hi_regs_2ex),
         .lo_data_out(lo_regs_2ex)
+    );
+
+    ctrl ctrl0(
+        .rst_n(rst_n),
+        .stall_req_id(ctrl_req_from_id),
+        .stall_req_ex(ctrl_req_from_ex),
+        .stall(ctrl_out)
     );
 endmodule

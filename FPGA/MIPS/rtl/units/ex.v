@@ -18,6 +18,7 @@ module ex (
     input[`REG_DATA_WIDTH-1:0]      mem_lo_regs_in,
     input                           mem_hilo_wen,
 
+    output reg                      stall_req,
     output reg[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
     output reg[`REG_DATA_WIDTH-1:0] w_reg_data_out,
     output reg                      w_reg_en_out,

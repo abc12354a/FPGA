@@ -41,6 +41,10 @@ module id (
     wire[4:0]        op4 = inst_data_in[10:6];
 
     always @(*) begin
+        stall_req = 0;
+    end
+
+    always @(*) begin
         if(!rst_n) begin
             aluop_out = `EXE_NOP;
             alusel_out = `EXE_RES_NOP;

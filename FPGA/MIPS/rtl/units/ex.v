@@ -18,11 +18,15 @@ module ex (
     input[`REG_DATA_WIDTH-1:0]      mem_lo_regs_in,
     input                           mem_hilo_wen,
 
+    input[64-1:0]                   hilo_tmp_in,
+    input[1:0]                      mul_cnt_in,
+
     output reg                      stall_req,
     output reg[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
     output reg[`REG_DATA_WIDTH-1:0] w_reg_data_out,
     output reg                      w_reg_en_out,
-
+    output reg[64-1:0]              hilo_tmp_out,
+    output reg[1:0]                 mul_cnt_out,
     output reg[`REG_DATA_WIDTH-1:0] hi_regs_out,
     output reg[`REG_DATA_WIDTH-1:0] lo_regs_out,
     output reg                      hilo_wen
@@ -35,6 +39,9 @@ module ex (
     reg[`REG_DATA_WIDTH-1:0]    reg_hi;
     reg[`REG_DATA_WIDTH-1:0]    reg_lo;
     
+    reg[64-1:0]                 hilo_tmp_ma_inst;
+    reg                         stall_req_ma_inst;
+
     wire                        over_mem;
     wire                        reg1_eq_reg2;
     wire                        reg1_lt_reg2; //reg1 < reg2
@@ -43,8 +50,8 @@ module ex (
     wire[`REG_DATA_WIDTH-1:0]   sum_res;
     wire[`REG_DATA_WIDTH-1:0]   mul_op1;
     wire[`REG_DATA_WIDTH-1:0]   mul_op2;
-    wire[64-1:0]               hilo_tmp;
-
+    wire[64-1:0]                hilo_tmp;
+    
 
     assign reg2_mux = ((aluop_in == `EXE_SUB_OP )||
                        (aluop_in == `EXE_SUBU_OP)||
@@ -63,10 +70,12 @@ module ex (
                           (!reg1_in[31] && !reg2_in[31] &&  sum_res[31]):
                           (reg1_in < reg2_in);
 
-    assign mul_op1  = ((aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP))&&reg1_in[31] ?
+    assign mul_op1  = ((aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP)
+                      ||(aluop_in == `EXE_MADD_OP)||(aluop_in == `EXE_MSUB_OP))&&reg1_in[31] ?
                       (~reg1_in + 1) : reg1_in;
     
-    assign mul_op2  = ((aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP))&&reg2_in[31] ?
+    assign mul_op2  = ((aluop_in == `EXE_MUL_OP) || (aluop_in == `EXE_MULT_OP)
+                      ||(aluop_in == `EXE_MADD_OP)||(aluop_in == `EXE_MSUB_OP))&&reg2_in[31] ?
                       (~reg2_in + 1) : reg2_in;
 
     assign hilo_tmp =  mul_op1*mul_op2;                  
@@ -88,11 +97,15 @@ module ex (
     end
 
     always @(*) begin
+        stall_req = stall_req_ma_inst;
+    end
+
+    always @(*) begin
         if(!rst_n)begin
             mul_res = 0;
         end else begin
             case (aluop_in)
-                `EXE_MUL_OP, `EXE_MULT_OP : begin
+                `EXE_MUL_OP, `EXE_MULT_OP ,`EXE_MADD_OP,`EXE_MSUB_OP: begin
                     if (reg1_in[31] ^ reg2_in[31]) begin
                         mul_res = ~hilo_tmp + 1;
                     end else begin
@@ -100,6 +113,58 @@ module ex (
                     end
                 end
                 default: mul_res = hilo_tmp;
+            endcase
+        end
+    end
+
+    always @(*) begin
+        if(!rst_n) begin
+            hilo_tmp_out = 0;
+            mul_cnt_out = 0;
+            stall_req_ma_inst = 0;
+        end else begin
+            case (aluop_in)
+                `EXE_MADD_OP, `EXE_MADDU_OP: begin
+                    if(mul_cnt_in == 'b0) begin
+                        hilo_tmp_out = mul_res;
+                        mul_cnt_out = 2'b01;
+                        hilo_tmp_ma_inst = 'b0;
+                        stall_req_ma_inst = 'b1;
+                    end else if(mul_cnt_in == 'b01) begin
+                        hilo_tmp_out = 'b0;
+                        mul_cnt_out = 2'b10;
+                        hilo_tmp_ma_inst = hilo_tmp_in + {reg_hi,reg_lo};
+                        stall_req_ma_inst = 'b0;
+                    end else begin
+                        hilo_tmp_out = 0;
+                        mul_cnt_out = 2'b0;
+                        hilo_tmp_ma_inst = 'b0;
+                        stall_req_ma_inst = 'b0;
+                    end
+                end
+                `EXE_MSUB_OP, `EXE_MSUBU_OP: begin
+                    if(mul_cnt_in == 'b0) begin
+                        hilo_tmp_out = ~mul_res+1;
+                        mul_cnt_out = 2'b01;
+                        hilo_tmp_ma_inst = 'b0;
+                        stall_req_ma_inst = 'b1;
+                    end else if(mul_cnt_in == 'b01) begin
+                        hilo_tmp_out = 'b0;
+                        mul_cnt_out = 2'b10;
+                        hilo_tmp_ma_inst = hilo_tmp_in + {reg_hi,reg_lo};
+                        stall_req_ma_inst = 'b0;
+                    end else begin
+                        hilo_tmp_out = 0;
+                        mul_cnt_out = 2'b0;
+                        hilo_tmp_ma_inst = 'b0;
+                        stall_req_ma_inst = 'b0;
+                    end
+                end 
+                default: begin
+                    hilo_tmp_out = 0;
+                    mul_cnt_out = 0;
+                    stall_req_ma_inst = 0;
+                end
             endcase
         end
     end
@@ -204,6 +269,16 @@ module ex (
                 `EXE_MULT_OP, `EXE_MULTU_OP: begin
                     hi_regs_out = mul_res[63:32];
                     lo_regs_out = mul_res[31:0];
+                    hilo_wen = 1;
+                end
+                `EXE_MADD_OP, `EXE_MADDU_OP: begin
+                    hi_regs_out = hilo_tmp_ma_inst[63:32];
+                    lo_regs_out = hilo_tmp_ma_inst[31:0];
+                    hilo_wen = 1;
+                end
+                `EXE_MSUB_OP, `EXE_MSUBU_OP: begin
+                    hi_regs_out = hilo_tmp_ma_inst[63:32];
+                    lo_regs_out = hilo_tmp_ma_inst[31:0];
                     hilo_wen = 1;
                 end
                 default: begin

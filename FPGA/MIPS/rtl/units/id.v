@@ -402,7 +402,7 @@ module id (
                             reg_wr_addr_out = wt;
                             inst_valid = 1;                            
                         end
-                        `EXE_SUBU: begin
+                        `EXE_MSUBU: begin
                             aluop_out = `EXE_MSUBU_OP;
                             alusel_out = `EXE_RES_MUL;
                             reg_rd_en1_out = 1;

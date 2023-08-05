@@ -18,14 +18,14 @@ module ex (
     input[`REG_DATA_WIDTH-1:0]      mem_lo_regs_in,
     input                           mem_hilo_wen,
 
-    input[64-1:0]                   hilo_tmp_in,
+    input[`DOUBLE_DATA_WIDTH-1:0]                   hilo_tmp_in,
     input[1:0]                      mul_cnt_in,
 
     output reg                      stall_req,
     output reg[`REG_ADDR_WIDTH-1:0] w_reg_addr_out,
     output reg[`REG_DATA_WIDTH-1:0] w_reg_data_out,
     output reg                      w_reg_en_out,
-    output reg[64-1:0]              hilo_tmp_out,
+    output reg[`DOUBLE_DATA_WIDTH-1:0]              hilo_tmp_out,
     output reg[1:0]                 mul_cnt_out,
     output reg[`REG_DATA_WIDTH-1:0] hi_regs_out,
     output reg[`REG_DATA_WIDTH-1:0] lo_regs_out,
@@ -35,11 +35,11 @@ module ex (
     reg[`REG_DATA_WIDTH-1:0]    shift_res;
     reg[`REG_DATA_WIDTH-1:0]    move_res;
     reg[`REG_DATA_WIDTH-1:0]    arith_res;
-    reg[64-1:0]                 mul_res;
+    reg[`DOUBLE_DATA_WIDTH-1:0]                 mul_res;
     reg[`REG_DATA_WIDTH-1:0]    reg_hi;
     reg[`REG_DATA_WIDTH-1:0]    reg_lo;
     
-    reg[64-1:0]                 hilo_tmp_ma_inst;
+    reg[`DOUBLE_DATA_WIDTH-1:0]                 hilo_tmp_ma_inst;
     reg                         stall_req_ma_inst;
 
     wire                        over_mem;
@@ -50,7 +50,7 @@ module ex (
     wire[`REG_DATA_WIDTH-1:0]   sum_res;
     wire[`REG_DATA_WIDTH-1:0]   mul_op1;
     wire[`REG_DATA_WIDTH-1:0]   mul_op2;
-    wire[64-1:0]                hilo_tmp;
+    wire[`DOUBLE_DATA_WIDTH-1:0]                hilo_tmp;
     
 
     assign reg2_mux = ((aluop_in == `EXE_SUB_OP )||

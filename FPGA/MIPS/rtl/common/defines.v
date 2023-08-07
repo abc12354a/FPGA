@@ -49,7 +49,6 @@
 `define EXE_CLZ   6'b100000
 `define EXE_CLO   6'b100001
 
-
 `define EXE_MULT  6'b011000
 `define EXE_MULTU 6'b011001
 `define EXE_MUL   6'b000010
@@ -57,6 +56,9 @@
 `define EXE_MADDU 6'b000001
 `define EXE_MSUB  6'b000100
 `define EXE_MSUBU 6'b000101
+
+`define EXE_DIV   6'b011010
+`define EXE_DIVU  6'b011011
 
 `define EXE_SYNC  6'b001111
 `define EXE_PREF  6'b110011
@@ -109,6 +111,9 @@
 `define EXE_MSUB_OP   8'b1010_1010
 `define EXE_MSUBU_OP  8'b1010_1011
 
+`define EXE_DIV_OP    8'b0001_1010
+`define EXE_DIVU_OP   8'b0001_1011
+
 `define EXE_NOP_OP    8'b0000_0000
 //********************** SEL **********************
 `define EXE_RES_LOGIC      3'b001
@@ -117,3 +122,8 @@
 `define EXE_RES_MOVE       3'b011
 `define EXE_RES_ARITHMETIC 3'b100	
 `define EXE_RES_MUL        3'b101
+//********************** DIV **********************
+`define DIV_FREE           2'b00
+`define DIV_ZERO           2'b01
+`define DIV_ON             2'b10
+`define DIV_END            2'b11

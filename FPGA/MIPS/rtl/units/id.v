@@ -312,6 +312,26 @@ module id (
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end
+                                `EXE_DIV: begin
+                                    aluop_out = `EXE_DIV_OP;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_DIVU: begin
+                                    aluop_out = `EXE_DIVU_OP;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 1;
+                                    reg_wr_en_out  = 0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
                                 default: begin
                                     aluop_out = `EXE_NOP_OP;
                                     alusel_out = `EXE_RES_LOGIC;

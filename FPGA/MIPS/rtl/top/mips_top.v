@@ -57,10 +57,10 @@ module mips_top (
     wire [`REG_DATA_WIDTH-1:0]  lo_regs_2mem_dly;
     wire                        hilo_wen_2mem_dly;
 
-    wire [`DOUBLE_DATA_WIDTH-1:0]               hilo_tmp_2mem_dly;
-    wire [1:0]                  mul_cnt_2mem_dly;
-    wire [`DOUBLE_DATA_WIDTH-1:0]               hilo_tmp_2ex;
-    wire [1:0]                  mul_cnt_2ex;
+    wire [`DOUBLE_DATA_WIDTH-1:0]hilo_tmp_2mem_dly;
+    wire [1:0]                   mul_cnt_2mem_dly;
+    wire [`DOUBLE_DATA_WIDTH-1:0]hilo_tmp_2ex;
+    wire [1:0]                   mul_cnt_2ex;
 
 //ex to id
     wire[`REG_ADDR_WIDTH-1:0]   reg_wr_waddr_ex2id = reg_wr_addr_2mem;

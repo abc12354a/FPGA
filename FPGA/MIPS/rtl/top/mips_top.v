@@ -69,7 +69,13 @@ module mips_top (
 
 //ex to ctrl
     wire [0:0]                  ctrl_req_from_ex;
-
+//ex to div
+    wire [`REG_DATA_WIDTH-1:0]   dived_2div;
+    wire [`REG_DATA_WIDTH-1:0]   div_2div;
+    wire [0:0]                   div_start_2div;
+    wire [0:0]                   div_signed_2div;
+    wire [`DOUBLE_DATA_WIDTH-1:0]div_res_2ex;
+    wire [0:0]                   div_ready_2ex;
 //mem to wb
     wire [`REG_ADDR_WIDTH-1:0]  reg_wr_addr_2wb;
     wire [`REG_DATA_WIDTH-1:0]  reg_wr_data_2wb;
@@ -195,7 +201,13 @@ module mips_top (
         .mem_hilo_wen(hilo_wen_mem2ex),
         .hilo_tmp_in(hilo_tmp_2ex),
         .mul_cnt_in(mul_cnt_2ex),
+        .div_res_in(div_res_2ex),
+        .div_rdy_in(div_ready_2ex),
         .stall_req(ctrl_req_from_ex),
+        .div_dived_out(dived_2div),
+        .div_div_out(div_2div),
+        .div_start_out(div_start_2div),
+        .signed_div_out(div_signed_2div),
         .w_reg_addr_out(reg_wr_addr_2mem),
         .w_reg_data_out(reg_wr_data_2mem),
         .w_reg_en_out(reg_wr_en_2mem),
@@ -278,4 +290,16 @@ module mips_top (
         .stall_req_ex(ctrl_req_from_ex),
         .stall(ctrl_out)
     );
+
+    div div0(
+        clk(clk),
+        rst_n(rst_n),
+        signed_div_in(div_signed_2div),
+        dived_in(dived_2div),
+        div_in(div_2div),
+        div_start_in(div_start_2div),
+        div_cancel_in(0), //tie 0, not used
+        div_res_out(div_res_2ex),
+        div_ready_out(div_ready_2ex)
+    )
 endmodule

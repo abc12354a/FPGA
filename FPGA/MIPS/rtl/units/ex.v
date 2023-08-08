@@ -105,7 +105,7 @@ module ex (
     end
 
     always @(*) begin
-        stall_req = stall_req_ma_inst;
+        stall_req = stall_req_ma_inst || stall_req_div_inst;
     end
 
     always @(*) begin
@@ -179,7 +179,56 @@ module ex (
 
     always @(*) begin
         if(!rst_n)begin
-            
+            stall_req_div_inst = 0;
+            div_dived_out = 0;
+            div_div_out = 0;
+            div_start_out = 0;
+            signed_div_out = 0;
+        end else begin
+            stall_req_div_inst = 0;
+            div_dived_out = 0;
+            div_div_out = 0;
+            div_start_out = 0;
+            signed_div_out = 0;
+            case (aluop_in)
+                `EXE_DIV_OP: begin
+                    if(!div_rdy_in) begin
+                        div_dived_out = reg1_in;
+                        div_div_out = reg2_in;
+                        div_start_out = 1;
+                        stall_req_div_inst = 1;
+                        signed_div_out = 1;
+                    end else begin
+                        div_dived_out = reg1_in;
+                        div_div_out = reg2_in;
+                        div_start_out = 0;
+                        stall_req_div_inst = 0;
+                        signed_div_out = 1;
+                    end
+                end 
+                `EXE_DIVU_OP: begin
+                    if(!div_rdy_in) begin
+                        div_dived_out = reg1_in;
+                        div_div_out = reg2_in;
+                        div_start_out = 1;
+                        stall_req_div_inst = 1;
+                        signed_div_out = 0;
+                    end else begin
+                        div_dived_out = reg1_in;
+                        div_div_out = reg2_in;
+                        div_start_out = 0;
+                        stall_req_div_inst = 0;
+                        signed_div_out = 0;
+                    end
+                end
+                default: begin
+                    stall_req_div_inst = 0;
+                    div_dived_out = 0;
+                    div_div_out = 0;
+                    div_start_out = 0;
+                    signed_div_out = 0;
+                end
+            endcase
         end
     end
 
@@ -293,6 +342,11 @@ module ex (
                 `EXE_MSUB_OP, `EXE_MSUBU_OP: begin
                     hi_regs_out = hilo_tmp_ma_inst[63:32];
                     lo_regs_out = hilo_tmp_ma_inst[31:0];
+                    hilo_wen = 1;
+                end
+                `EXE_DIV_OP, `EXE_DIVU_OP: begin
+                    hi_regs_out = div_res_in[63:32];
+                    lo_regs_out = div_res_in[31:0];
                     hilo_wen = 1;
                 end
                 default: begin

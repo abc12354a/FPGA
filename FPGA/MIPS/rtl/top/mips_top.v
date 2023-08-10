@@ -292,14 +292,14 @@ module mips_top (
     );
 
     div div0(
-        clk(clk),
-        rst_n(rst_n),
-        signed_div_in(div_signed_2div),
-        dived_in(dived_2div),
-        div_in(div_2div),
-        div_start_in(div_start_2div),
-        div_cancel_in(0), //tie 0, not used
-        div_res_out(div_res_2ex),
-        div_ready_out(div_ready_2ex)
-    )
+        .clk(clk),
+        .rst_n(rst_n),
+        .signed_div_in(div_signed_2div),
+        .dived_in(dived_2div),
+        .div_in(div_2div),
+        .div_start_in(div_start_2div),
+        .div_cancel_in(1'b0), //tie 0, not used
+        .div_res_out(div_res_2ex),
+        .div_ready_out(div_ready_2ex)
+    );
 endmodule

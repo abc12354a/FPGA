@@ -7,7 +7,7 @@ module div (
     input                                   div_start_in,
     input                                   div_cancel_in,
     output reg[`DOUBLE_DATA_WIDTH-1:0]      div_res_out,
-    output reg                              div_ready_out,
+    output reg                              div_ready_out
 );
     wire[`REG_DATA_WIDTH:0]      div_tmp; //33bit
     wire[`REG_DATA_WIDTH-1:0]    div_op1;
@@ -36,7 +36,7 @@ module div (
                         end else begin
                             div_state <= `DIV_ON;
                             div_cnt <= 'h0;
-                            divend <= {31{1'b0},div_op1,1'b0};
+                            divend <= {32'h0,div_op1,1'b0};
                             divisor<= div_op2;
                         end
                     end else begin

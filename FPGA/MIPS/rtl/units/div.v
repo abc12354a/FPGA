@@ -27,6 +27,7 @@ module div (
             div_state <= `DIV_FREE;
             div_ready_out <= 0;
             div_res_out <= 0;
+            div_cnt <= 0;
         end else begin
             case (div_state)
                 `DIV_FREE: begin

@@ -51,7 +51,7 @@ module div (
                 end
                 `DIV_ON: begin
                     if(!div_cancel_in) begin
-                        if(div_cnt <= 6'b10_0000) begin
+                        if(div_cnt < 6'b10_0000) begin
                             if(div_tmp[32] == 1'b1) begin//minuend-n < 0
                                 divend <= {divend[63:0],1'b0};
                             end else begin
@@ -63,7 +63,7 @@ module div (
                                 divend[31:0] <= (~divend[31:0]+1'b1);
                             end
                             if(signed_div_in & (dived_in[31] ^ divend[64])) begin
-                                divend[64:33] <= (~divend[31:0]+1'b1);
+                                divend[64:33] <= (~divend[64:33]+1'b1);
                             end
                             div_state <= `DIV_END;
                             div_cnt <= 'h0;

@@ -1,7 +1,10 @@
 module pc (
     input                        clk,
     input                        rst_n,//sync reset
-    input[`CTRL_WIDTH-1:0]                   stall,
+    input[`CTRL_WIDTH-1:0]       stall,
+    input                        branch_flag,
+    input[`INST_ADDR_WIDTH-1:0]  branch_target_addr,
+
 
     output reg[`INST_ADDR_WIDTH-1:0] addr_to_rom,
     output reg                       pc_enable
@@ -19,7 +22,11 @@ module pc (
         if(!pc_enable) begin
             addr_to_rom <= 0; //one pipe delay
         end else if(stall[0] == 0) begin
-            addr_to_rom <= addr_to_rom + 'd4;
+            if(branch_flag == 1'b1) begin
+                addr_to_rom <= branch_target_addr;
+            end else begin
+               addr_to_rom <= addr_to_rom + 'h4; 
+            end
         end
     end
 

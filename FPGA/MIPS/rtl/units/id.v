@@ -1,6 +1,8 @@
 module id (
     input                        rst_n,//sync rst, low valid
     input[`INST_DATA_WIDTH-1:0]  inst_data_in,
+    input[`INST_ADDR_WIDTH-1:0]  inst_addr_in,
+    input                        delay_slot_flag_in,
 
     input[`REG_DATA_WIDTH-1:0]   reg_rd_data1_in,
     input[`REG_DATA_WIDTH-1:0]   reg_rd_data2_in,
@@ -14,7 +16,13 @@ module id (
     input[`REG_DATA_WIDTH-1:0]   mem_wdata_in,
     input                        mem_wen_in,
 
+
     output reg                       stall_req,
+    output reg                       branch_flag_out,
+    output reg                       delay_slot_flag_out,
+    output reg                       next_delay_slot_flag_out,
+    output reg[`REG_ADDR_WIDTH-1:0]  branch_target_addr_out,
+    output reg[`REG_ADDR_WIDTH-1:0]  link_addr_out,
     output reg[`REG_ADDR_WIDTH-1:0]  reg_rd_addr1_out,
     output reg[`REG_ADDR_WIDTH-1:0]  reg_rd_addr2_out,
     output reg                       reg_rd_en1_out,
@@ -32,6 +40,9 @@ module id (
     //-------------------------------------------
     reg                        inst_valid;
     reg[`REG_DATA_WIDTH-1:0]   imm_data;
+    wire[`INST_ADDR_WIDTH-1:0] pc_4;
+    wire[`INST_ADDR_WIDTH-1:0] pc_8;
+    wire[`REG_DATA_WIDTH-1:0]  signed_ext;
     wire[6-1:0]       op = inst_data_in[31:26];
     wire[4:0]         rs = inst_data_in[25:21];
     wire[4:0]         rt = inst_data_in[20:16];
@@ -40,8 +51,21 @@ module id (
     wire[5:0]    func_op = inst_data_in[5:0];
     wire[4:0]        op4 = inst_data_in[10:6];
 
+
+    assign pc_4          = inst_addr_in + 'd4;
+    assign pc_8          = inst_addr_in + 'd8;
+    assign signed_ext    = {14{inst_data_in[15]},inst_data_in[15:0],2'b00};
+
     always @(*) begin
         stall_req = 0;
+    end
+
+    always @($) begin
+        if(!rst_n)begin
+            delay_slot_flag_out = 0;
+        end else begin
+            delay_slot_flag_out = delay_slot_flag_in;
+        end
     end
 
     always @(*) begin
@@ -56,17 +80,25 @@ module id (
             reg_rd_en2_out = 0;
             reg_wr_en_out = 0;
             imm_data = 0;
+            branch_target_addr_out = 0;
+            link_addr_out = 0;
+            branch_flag_out = 0;
+            delay_slot_flag_out = 0;
         end else begin
             aluop_out = `EXE_NOP;
             alusel_out = `EXE_RES_NOP;
             inst_valid = 0;
             reg_rd_addr1_out = rs;
             reg_rd_addr2_out = rt;
-            reg_wr_addr_out = wt; //why
+            reg_wr_addr_out = wt;
             reg_rd_en1_out = 0;
             reg_rd_en2_out = 0;
             reg_wr_en_out = 0;
             imm_data = 0;
+            branch_target_addr_out = 0;
+            link_addr_out = 0;
+            branch_flag_out = 0;
+            delay_slot_flag_out = 0;
             case (op)
                 `EXE_SPEC: begin
                     case (op4)
@@ -332,6 +364,36 @@ module id (
                                     reg_wr_addr_out = wt;
                                     inst_valid = 1;
                                 end
+                                `EXE_JR: begin
+                                    aluop_out = `EXE_JR_OP;
+                                    alusel_out = `EXE_RES_JUMP_BRANCH;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 0;
+                                    reg_wr_en_out  = 0;
+                                    branch_target_addr_out = reg_rd_data1_out;
+                                    branch_flag_out = 1;
+                                    next_delay_slot_flag_out = 1;
+                                    link_addr_out = 0;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
+                                `EXE_JALR: begin
+                                    aluop_out = `EXE_JALR_OP;
+                                    alusel_out = `EXE_RES_JUMP_BRANCH;
+                                    reg_rd_en1_out = 1;
+                                    reg_rd_en2_out = 0;
+                                    reg_wr_en_out  = 1;
+                                    branch_target_addr_out = reg_rd_data1_out;
+                                    branch_flag_out = 1;
+                                    next_delay_slot_flag_out = 1;
+                                    link_addr_out = pc_8;
+                                    reg_rd_addr1_out = rs;
+                                    reg_rd_addr2_out = rt;
+                                    reg_wr_addr_out = wt;
+                                    inst_valid = 1;
+                                end
                                 default: begin
                                     aluop_out = `EXE_NOP_OP;
                                     alusel_out = `EXE_RES_LOGIC;
@@ -534,6 +596,32 @@ module id (
                     reg_rd_addr1_out = rs;
                     reg_wr_addr_out = rt;
                     imm_data = {{16{im[15]}},im};
+                    inst_valid = 1;
+                end
+                `EXE_J: begin
+                    aluop_out = `EXE_J_OP;
+                    alusel_out = `EXE_RES_ARITHMETIC;
+                    reg_rd_en1_out = 0;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 0;
+                    branch_target_addr_out = {pc_4[31:28],inst_data_in[25:0],2'b00};
+                    branch_flag_out = 1;
+                    reg_wr_addr_out = 0;
+                    next_delay_slot_flag_out = 1;
+                    link_addr_out = 0;
+                    inst_valid = 1;
+                end
+                `EXE_JAL begin
+                    aluop_out = `EXE_J_OP;
+                    alusel_out = `EXE_RES_ARITHMETIC;
+                    reg_rd_en1_out = 0;
+                    reg_rd_en2_out = 0;
+                    reg_wr_en_out  = 1;
+                    branch_target_addr_out = {pc_4[31:28],inst_data_in[25:0],2'b00};
+                    branch_flag_out = 1;
+                    reg_wr_addr_out = 5'b1_1111;//return to reg32
+                    next_delay_slot_flag_out = 1;
+                    link_addr_out = pc_8;
                     inst_valid = 1;
                 end
                 default:   begin

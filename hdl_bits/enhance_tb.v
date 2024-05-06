@@ -37,6 +37,16 @@ module fsm_tb();
         end
     end
 
+    initial begin
+        #2000 $finish();
+    end
+
+    initial begin
+        $fsdbDumpfile("tb.fsdb");
+        $fsdbDumpvars(0);
+    end
+
+
     enhance_fsm u_enhance_fsm(
         sys_clk,
         sys_rst_n,

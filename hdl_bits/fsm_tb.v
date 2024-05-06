@@ -11,6 +11,15 @@ module fsm_tb();
     end
 
     initial begin
+        #2000 $finish();
+    end
+
+    initial begin
+        $fsdbDumpfile("tb.fsdb");
+        $fsdbDumpvars(0);
+    end
+
+    initial begin
         sys_rst_n <= 0;
         #50 sys_rst_n <= 1;
     end

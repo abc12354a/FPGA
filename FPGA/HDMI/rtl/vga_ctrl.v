@@ -2,11 +2,11 @@ module vga_ctrl(
     input wire        vga_clk,
     input wire        sys_rst_n,
     input wire [15:0] pix_data,
-    output reg [9:0]  pix_x,
-    output reg [9:0]  pix_y,
-    output reg        hsync,
-    output reg        vsync,
-    output reg [15:0] rgb
+    output wire [9:0]  pix_x,
+    output wire [9:0]  pix_y,
+    output wire        hsync,
+    output wire        vsync,
+    output wire [15:0] rgb
 );
     parameter H_SYNC = 10'd96 , 
               H_BACK = 10'd40 , 
